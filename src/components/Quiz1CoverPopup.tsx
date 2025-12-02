@@ -1,0 +1,49 @@
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+interface Quiz1CoverPopupProps {
+  onClose: () => void;
+  onStartQuiz: () => void;
+}
+
+const Quiz1CoverPopup: React.FC<Quiz1CoverPopupProps> = ({ onClose, onStartQuiz }) => {
+  return (
+    <AnimatePresence>
+      <motion.div 
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <motion.div 
+          className="bg-white rounded-2xl p-6 w-full max-w-sm mx-4"
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="text-center">
+            <p className="text-gray-600 mb-4">
+              Kamu dapat menggunakan kalkulator untuk pertanyaan numerik, atau menggunakan Excel/Spreadsheet.
+            </p>
+            <p className="text-gray-600 mb-6">
+              Tes ini juga paling baik dikerjakan di desktop. Kamu dapat mempersiapkannya sekarang sebelum melanjutkan ya! Selamat Mengerjakan !
+            </p>
+            
+            <div className="flex justify-center">
+              <button
+                onClick={onStartQuiz}
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-200"
+              >
+                Mulai Sekarang
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+export default Quiz1CoverPopup;
