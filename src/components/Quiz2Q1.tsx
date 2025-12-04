@@ -10,9 +10,11 @@ type Question = {
   options: { id: string; label: string; description: string }[];
 };
 
+const QUESTION_ID = "numerical-1";
+
 const questions: Question[] = [
   {
-    id: "statistics-1",
+    id: QUESTION_ID,
     prompt: "Pilihlah jawaban yang benar",
     context:
       "Di sekolah X, siswa menghitung nilai rata-rata dari tiga kelas yang terdiri dari 60, 45 dan 55 siswa yang masing-masing adalah 55, 50, 60. Rata-rata nilai semua siswa dari ketiga kelas tersebut adalah...",
@@ -49,9 +51,10 @@ const questions: Question[] = [
 interface Quiz2Q1Props {
   onBack: () => void;
   onComplete: () => void;
+  onAnswer: (questionId: string, selectedOptions: string[]) => void;
 }
 
-const Quiz2Q1: React.FC<Quiz2Q1Props> = ({ onBack, onComplete }) => {
+const Quiz2Q1: React.FC<Quiz2Q1Props> = ({ onBack, onComplete, onAnswer }) => {
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,26 +67,25 @@ const Quiz2Q1: React.FC<Quiz2Q1Props> = ({ onBack, onComplete }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  const toggleAnswer = (questionId: string, optionId: string) => {
+  const toggleAnswer = (optionId: string) => {
     if (isSubmitting) return;
     
-    setAnswers((prev) => {
-      const current = new Set(prev[questionId] ?? []);
-      if (current.has(optionId)) {
-        current.delete(optionId);
-      } else {
-        current.add(optionId);
-      }
-
-      return {
-        ...prev,
-        [questionId]: Array.from(current),
-      };
-    });
+    setAnswers((prev) => ({
+      ...prev,
+      [QUESTION_ID]: [optionId],
+    }));
   };
 
   const handleNext = () => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
+    
+    const selectedOptions = answers[QUESTION_ID] || [];
+    
+    // Notify parent component about the answer
+    onAnswer(QUESTION_ID, selectedOptions);
+    
+    // Move to the next question
     onComplete();
   };
 
@@ -120,10 +122,10 @@ const Quiz2Q1: React.FC<Quiz2Q1Props> = ({ onBack, onComplete }) => {
                 {question.options.map((option) => (
                   <button
                     key={option.id}
-                    onClick={() => toggleAnswer(question.id, option.id)}
+                    onClick={() => toggleAnswer(option.id)}
                     disabled={isSubmitting}
                     className={`p-4 rounded-xl text-left transition-all duration-200 w-full text-sm shadow-md ${
-                      answers[question.id]?.includes(option.id)
+                      answers[QUESTION_ID]?.includes(option.id)
                         ? 'ring-2 ring-red-500 bg-red-50'
                         : 'bg-gray-50 hover:bg-gray-100'
                     } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}

@@ -6,8 +6,22 @@ interface RegistrationPopupProps {
 }
 
 const RegistrationPopup: React.FC<RegistrationPopupProps> = ({ onClose }) => {
+  const popupStyles = {
+    position: 'fixed' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 9999,
+    padding: '1rem',
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div style={popupStyles}>
       <motion.div 
         className="bg-white rounded-2xl p-6 w-full max-w-sm mx-4"
         initial={{ scale: 0.9, opacity: 0 }}

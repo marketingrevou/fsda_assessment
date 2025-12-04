@@ -110,9 +110,11 @@ type Question = {
   options: { id: string; label: string; description: string }[];
 };
 
+const QUESTION_ID = "data-interpretation-3";
+
 const questions: Question[] = [
   {
-    id: "statistics-3",
+    id: QUESTION_ID,
     prompt: "Silakan baca grafik di atas. Grafik Ini mewakili grafik penjualan perusahaan di dua wilayah, Utara dan Selatan. Pernyataan manakah yang sesuai dengan penarikan kesimpulan dari grafik tersebut yang benar?",
     context: "Pilih semua pernyataan yang benar (kamu bisa pilih lebih dari 1 jawaban)",
     options: [
@@ -148,9 +150,10 @@ const questions: Question[] = [
 interface Quiz3Q3Props {
   onBack: () => void;
   onComplete: () => void;
+  onAnswer: (questionId: string, selectedOptions: string[]) => void;
 }
 
-const Quiz3Q3: React.FC<Quiz3Q3Props> = ({ onBack, onComplete }) => {
+const Quiz3Q3: React.FC<Quiz3Q3Props> = ({ onBack, onComplete, onAnswer }) => {
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -163,11 +166,11 @@ const Quiz3Q3: React.FC<Quiz3Q3Props> = ({ onBack, onComplete }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  const toggleAnswer = (questionId: string, optionId: string) => {
+  const toggleAnswer = (optionId: string) => {
     if (isSubmitting) return;
     
     setAnswers((prev) => {
-      const current = new Set(prev[questionId] ?? []);
+      const current = new Set(prev[QUESTION_ID] ?? []);
       if (current.has(optionId)) {
         current.delete(optionId);
       } else {
@@ -176,17 +179,25 @@ const Quiz3Q3: React.FC<Quiz3Q3Props> = ({ onBack, onComplete }) => {
 
       return {
         ...prev,
-        [questionId]: Array.from(current),
+        [QUESTION_ID]: Array.from(current),
       };
     });
   };
 
   const handleNext = () => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
+    
+    const selectedOptions = answers[QUESTION_ID] || [];
+    
+    // Notify parent component about the answer
+    onAnswer(QUESTION_ID, selectedOptions);
+    
+    // Move to the next question
     onComplete();
   };
 
-  const hasAnswered = Object.values(answers).some(arr => arr.length > 0);
+  const hasAnswered = answers[QUESTION_ID]?.length > 0;
 
   return (
     <div className="h-screen w-full flex flex-col bg-[#FFDE3D] relative overflow-hidden">
@@ -222,10 +233,10 @@ const Quiz3Q3: React.FC<Quiz3Q3Props> = ({ onBack, onComplete }) => {
                 {question.options.map((option) => (
                   <button
                     key={option.id}
-                    onClick={() => toggleAnswer(question.id, option.id)}
+                    onClick={() => toggleAnswer(option.id)}
                     disabled={isSubmitting}
                     className={`p-4 rounded-xl text-left transition-all duration-200 w-full text-sm shadow-md ${
-                      answers[question.id]?.includes(option.id)
+                      answers[QUESTION_ID]?.includes(option.id)
                         ? 'ring-2 ring-red-500 bg-red-50'
                         : 'bg-gray-50 hover:bg-gray-100'
                     } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}

@@ -27,7 +27,7 @@ const PreQuiz1Scene: React.FC<PreQuiz1SceneProps> = ({ onBack, onNext }) => {
     setSelectedOption(optionId);
     setIsSubmitting(true);
     
-    if (optionId === 'excel') {
+    if (optionId === 'c') {
       setShowPopup('correct');
     } else {
       setShowPopup('wrong');
@@ -40,7 +40,7 @@ const PreQuiz1Scene: React.FC<PreQuiz1SceneProps> = ({ onBack, onNext }) => {
   };
 
   const handleNext = () => {
-    if (selectedOption === 'excel') {
+    if (selectedOption === 'c') {
       onNext(selectedOption);
     }
   };
@@ -75,10 +75,10 @@ const PreQuiz1Scene: React.FC<PreQuiz1SceneProps> = ({ onBack, onNext }) => {
 
           <div className="flex flex-col gap-4">
             {[
-              { id: 'photoshop', text: 'SELECT phone_number & homeaddress FROM customer' },
-              { id: 'premiere', text: 'SELECT phone_number, home_address FROM customer' },
-              { id: 'excel', text: 'SELECT phone_number, homeaddress FROM customer' },
-              { id: 'illustrator', text: 'Tak satu pun dari opsi-opsi ini benar' }
+              { id: 'a', text: 'SELECT phone_number & homeaddress FROM customer' },
+              { id: 'b', text: 'SELECT phone_number, home_address FROM customer' },
+              { id: 'c', text: 'SELECT phone_number, homeaddress FROM customer' },
+              { id: 'd', text: 'Tak satu pun dari opsi-opsi ini benar' }
             ].map((option) => (
               <button
                 key={option.id}
@@ -140,7 +140,7 @@ const PreQuiz1Scene: React.FC<PreQuiz1SceneProps> = ({ onBack, onNext }) => {
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">Tepat Sekali!</h3>
               <p className="text-gray-600 mb-6">
-                Microsoft Excel adalah alat yang sangat populer untuk analisis data dasar dan pembuatan laporan sederhana. Excel menyediakan berbagai fitur seperti rumus, pivot table, dan grafik yang sangat berguna untuk analisis data.
+                Koma digunakan sebagai pemisah nama kolom ketika memilih lebih dari satu kolom dalam SQL. Selain itu, nama kolom yang dipilih—phone_number dan homeaddress—sudah tepat karena sama persis dengan yang diminta pada soal.
               </p>
               <button
                 onClick={handleNext}
@@ -162,7 +162,7 @@ const PreQuiz1Scene: React.FC<PreQuiz1SceneProps> = ({ onBack, onNext }) => {
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">Coba Lagi!</h3>
               <p className="text-gray-600 mb-6">
-                Jawabanmu belum tepat. Coba pilih opsi lain yang lebih sesuai untuk analisis data dasar.
+                Jawabanmu belum tepat. Silakan pilih opsi lain yang lebih sesuai dengan sintaks SQL.
               </p>
               <button
                 onClick={() => setShowPopup('none')}

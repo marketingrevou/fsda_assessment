@@ -2,13 +2,12 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
-interface Quiz3CompletePopupProps {
-  onNext: () => void;
-  onClose?: () => void;
+interface PreQuizCompletePopupProps {
+  onContinue: () => void;
 }
 
-const Quiz3CompletePopup: React.FC<Quiz3CompletePopupProps> = ({ onNext, onClose }) => {
-  const popupStyles = {
+const PreQuizCompletePopup: React.FC<PreQuizCompletePopupProps> = ({ onContinue }) => {
+  const debugStyles = {
     position: 'fixed' as const,
     top: 0,
     left: 0,
@@ -23,7 +22,7 @@ const Quiz3CompletePopup: React.FC<Quiz3CompletePopupProps> = ({ onNext, onClose
   };
 
   return (
-    <div style={popupStyles}>
+    <div style={debugStyles}>
       <motion.div 
         className="bg-white rounded-2xl p-6 w-full max-w-sm mx-4 flex flex-col items-center"
         initial={{ scale: 0.9, opacity: 0 }}
@@ -41,13 +40,13 @@ const Quiz3CompletePopup: React.FC<Quiz3CompletePopupProps> = ({ onNext, onClose
             />
           </div>
           <p className="text-gray-800 text-lg font-medium mb-2">
-            Selamat sudah menyelesaikan bagian terakhir!
+            Kamu hebat! Sekarang kamu sudah sedikit familiar dengan tools Data Analyst, ini saatnya menentukan tipe Data Analyst kamu!
           </p>
           <button
-            onClick={onNext}
+            onClick={onContinue}
             className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
           >
-            Submit!
+            Yuk Lanjut!
           </button>
         </div>
       </motion.div>
@@ -55,4 +54,4 @@ const Quiz3CompletePopup: React.FC<Quiz3CompletePopupProps> = ({ onNext, onClose
   );
 };
 
-export default Quiz3CompletePopup;
+export default PreQuizCompletePopup;

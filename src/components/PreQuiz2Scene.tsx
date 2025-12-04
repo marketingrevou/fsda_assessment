@@ -26,7 +26,7 @@ const PreQuiz2Scene: React.FC<PreQuiz2SceneProps> = ({ onBack, onNext }) => {
     setSelectedOption(optionId);
     setIsSubmitting(true);
     
-    if (optionId === 'correct') {
+    if (optionId === 'c') {
       setShowPopup('correct');
     } else {
       setShowPopup('wrong');
@@ -39,7 +39,7 @@ const PreQuiz2Scene: React.FC<PreQuiz2SceneProps> = ({ onBack, onNext }) => {
   };
 
   const handleNext = () => {
-    if (selectedOption === 'correct') {
+    if (selectedOption === 'c') {
       onNext(selectedOption);
     }
   };
@@ -64,18 +64,22 @@ const PreQuiz2Scene: React.FC<PreQuiz2SceneProps> = ({ onBack, onNext }) => {
       <div className="flex-1 w-full flex items-center justify-center p-4 pt-20 pb-32">
         <div className="bg-white rounded-2xl p-6 w-full max-w-md">
           <div className="space-y-4">
-            <p className="text-gray-800 text-base text-left font-medium">
-              Dengan SQL, jika Kamu ingin memilih semua kolom, kamu dapat menggunakan simbol * untuk menggantikan [Column Name]
-              Bagaimana Kamu memilih semua kolom dari tabel bernama "Persons"?
-            </p>
+            <div className="space-y-4">
+              <p className="text-gray-800 text-base text-left font-medium">
+                Dengan SQL, jika Kamu ingin memilih semua kolom, kamu dapat menggunakan simbol * untuk menggantikan [Column Name]
+              </p>
+              <p className="text-gray-800 text-base text-left font-medium">
+                Bagaimana Kamu memilih semua kolom dari tabel bernama "Persons"?
+              </p>
+            </div>
           </div>
 
           <div className="flex flex-col gap-4 mt-6">
             {[
-              { id: 'option1', text: 'SELECT phone_number & homeaddress FROM customer' },
-              { id: 'option2', text: 'SELECT phone_number, home_address FROM customer' },
-              { id: 'option3', text: 'SELECT phone_number, homeaddress FROM customer' },
-              { id: 'correct', text: 'Tak satu pun dari opsi-opsi ini benar' }
+              { id: 'a', text: 'SELECT *.Persons FROM Persons' },
+              { id: 'b', text: 'SELECT [All Columns] FROM Persons' },
+              { id: 'c', text: 'SELECT * FROM Persons' },
+              { id: 'd', text: 'Tak satu pun dari opsi-opsi ini benar' }
             ].map((option) => (
               <button
                 key={option.id}
@@ -83,7 +87,7 @@ const PreQuiz2Scene: React.FC<PreQuiz2SceneProps> = ({ onBack, onNext }) => {
                 disabled={isSubmitting}
                 className={`p-4 rounded-xl text-left transition-all duration-200 w-full text-sm shadow-md ${
                   selectedOption === option.id
-                    ? option.id === 'correct'
+                    ? option.id === 'c'
                       ? 'ring-2 ring-green-500 bg-green-50'
                       : 'ring-2 ring-red-500 bg-red-50'
                     : 'bg-gray-50 hover:bg-gray-100'
@@ -110,9 +114,9 @@ const PreQuiz2Scene: React.FC<PreQuiz2SceneProps> = ({ onBack, onNext }) => {
             </button>
             <button 
               onClick={handleNext}
-              disabled={selectedOption !== 'correct'}
+              disabled={selectedOption !== 'c'}
               className={`flex-1 h-12 text-white font-semibold rounded-lg transition duration-200 flex items-center justify-center gap-2 ${
-                selectedOption === 'correct' 
+                selectedOption === 'c' 
                   ? 'bg-green-500 hover:bg-green-600' 
                   : 'bg-gray-400 cursor-not-allowed'
               }`}
@@ -137,7 +141,7 @@ const PreQuiz2Scene: React.FC<PreQuiz2SceneProps> = ({ onBack, onNext }) => {
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">Tepat Sekali!</h3>
               <p className="text-gray-600 mb-6">
-                Untuk memilih semua kolom dari tabel "Persons" dalam SQL, kamu dapat menggunakan perintah: <code className="bg-gray-100 px-2 py-1 rounded">SELECT * FROM Persons</code>. Tanda bintang (*) adalah wildcard yang mewakili semua kolom dalam tabel.
+                Dalam SQL simbol * digunakan untuk memilih semua kolom dari sebuah tabel, dan penulisan yang tepat adalah SELECT * FROM Persons tanpa tambahan karakter atau nama lain setelah tanda bintang
               </p>
               <button
                 onClick={handleNext}

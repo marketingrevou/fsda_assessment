@@ -10,9 +10,11 @@ type Question = {
   options: { id: string; label: string; description: string }[];
 };
 
+const QUESTION_ID = "logical-4";
+
 const questions: Question[] = [
   {
-    id: "logical-4",
+    id: QUESTION_ID,
     prompt: "Jika dua pernyataan pertama benar, maka pernyataan ketiga adalah:",
     context: (
       <>
@@ -45,10 +47,11 @@ const questions: Question[] = [
 interface Quiz1Q4Props {
   onBack: () => void;
   onComplete: () => void;
+  onAnswer: (questionId: string, selectedOptions: string[]) => void;
 }
 
-const Quiz1Q4: React.FC<Quiz1Q4Props> = ({ onBack, onComplete }) => {
-  const [answers, setAnswers] = useState<Record<string, string[]>>({});
+const Quiz1Q4: React.FC<Quiz1Q4Props> = ({ onBack, onComplete, onAnswer }) => {
+  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -60,30 +63,29 @@ const Quiz1Q4: React.FC<Quiz1Q4Props> = ({ onBack, onComplete }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  const toggleAnswer = (questionId: string, optionId: string) => {
+  const toggleAnswer = (optionId: string) => {
     if (isSubmitting) return;
     
-    setAnswers((prev) => {
-      const current = new Set(prev[questionId] ?? []);
-      if (current.has(optionId)) {
-        current.delete(optionId);
-      } else {
-        current.add(optionId);
-      }
-
-      return {
-        ...prev,
-        [questionId]: Array.from(current),
-      };
-    });
+    setAnswers((prev) => ({
+      ...prev,
+      [QUESTION_ID]: prev[QUESTION_ID] === optionId ? '' : optionId,
+    }));
   };
 
   const handleNext = () => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
+    
+    const selectedOptions = answers[QUESTION_ID] ? [answers[QUESTION_ID]] : [];
+    
+    // Notify parent component about the answer
+    onAnswer(QUESTION_ID, selectedOptions);
+    
+    // Move to the next question
     onComplete();
   };
 
-  const hasAnswered = Object.values(answers).some(arr => arr.length > 0);
+  const hasAnswered = Object.values(answers).some(answer => answer !== '');
 
   return (
     <div className="h-screen w-full flex flex-col bg-[#FFDE3D] relative overflow-hidden">
@@ -118,10 +120,10 @@ const Quiz1Q4: React.FC<Quiz1Q4Props> = ({ onBack, onComplete }) => {
                   {question.options.map((option) => (
                     <button
                       key={option.id}
-                      onClick={() => toggleAnswer(question.id, option.id)}
+                      onClick={() => toggleAnswer(option.id)}
                       disabled={isSubmitting}
                       className={`p-4 rounded-xl text-left transition-all duration-200 w-full text-sm shadow-md ${
-                        answers[question.id]?.includes(option.id)
+                        answers[QUESTION_ID] === option.id
                           ? 'ring-2 ring-red-500 bg-red-50'
                           : 'bg-gray-50 hover:bg-gray-100'
                       } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
