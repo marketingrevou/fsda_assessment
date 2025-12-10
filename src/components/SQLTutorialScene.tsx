@@ -91,13 +91,13 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
       
       if (isAnswerCorrect) {
         setShowTable(true);
-        setTimeout(() => {
-          setCurrentStep(prev => prev + 1);
-          setUserInput('');
-          setIsCorrect(false);
-          setShowTable(false);
-        }, 2500); // Increased from 1500ms to 2500ms for better visibility
-    } else {
+        // Don't auto-advance, let the user click Next
+      } else if (!isCorrect) {
+        // Only show hint if the answer was wrong
+        setShowHint(true);
+      }
+    } else if (!currentStepData.showInput) {
+      // If there's no input required, just go to next step
       setCurrentStep(prev => prev + 1);
       setUserInput('');
     }
@@ -130,42 +130,69 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
     const headers = Object.keys(data[0]);
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
     
+    // Define column classes based on header
+    const getColumnClass = (header: string) => {
+      const baseClass = 'px-2 py-2 border-b border-gray-100 break-words';
+      if (isMobile) {
+        if (header === 'Nama') return `${baseClass} w-[25%]`;
+        if (header === 'Nomor HP') return `${baseClass} w-[25%]`;
+        if (header === 'Email') return `${baseClass} w-[30%]`;
+        if (header === 'Umur') return `${baseClass} w-[10%]`;
+        if (header === 'Tanggal Lahir') return `${baseClass} w-[20%]`;
+      }
+      return `${baseClass} px-4`;
+    };
+    
+    // Format cell content for mobile
+    const formatCellContent = (header: string, content: any) => {
+      const strContent = String(content);
+      if (!isMobile) return strContent;
+      
+      if (header === 'Nama') return strContent.length > 10 ? `${strContent.substring(0, 8)}...` : strContent;
+      if (header === 'Nomor HP') return strContent.length > 8 ? `${strContent.substring(0, 8)}...` : strContent;
+      if (header === 'Email') return strContent.length > 10 ? `${strContent.substring(0, 10)}...` : strContent;
+      if (header === 'Umur') return strContent;
+      if (header === 'Tanggal Lahir') return strContent;
+      
+      return strContent.length > 15 ? `${strContent.substring(0, 12)}...` : strContent;
+    };
+    
     return (
-      <div className="mt-4 md:mt-6 border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+      <div className="mt-4 w-full border border-gray-200 rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto -mx-1">
-          <table className="min-w-full text-xs md:text-sm">
-            <thead className="bg-gray-50">
-              <tr>
-                {headers.map((header) => (
-                  <th 
-                    key={header} 
-                    className="px-2 md:px-4 py-2 text-left font-medium text-gray-700 border-b whitespace-nowrap"
-                  >
-                    {header.length > 10 && isMobile ? `${header.substring(0, 8)}...` : header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row, rowIndex) => (
-                <tr key={rowIndex} className="hover:bg-gray-50">
-                  {headers.map((header, cellIndex) => (
-                    <td 
-                      key={`${rowIndex}-${cellIndex}`} 
-                      className="px-2 md:px-4 py-2 border-b border-gray-100 break-words max-w-[120px] md:max-w-none overflow-hidden text-ellipsis"
-                      title={String(row[header])}
+          <div className="min-w-max w-full">
+            <table className="w-full text-xs md:text-sm">
+              <thead className="bg-gray-50 sticky top-0 z-10">
+                <tr>
+                  {headers.map((header) => (
+                    <th 
+                      key={header} 
+                      className={`${getColumnClass(header)} text-left font-medium text-gray-700 whitespace-nowrap`}
                     >
-                      {String(row[header]).length > 15 && isMobile 
-                        ? `${String(row[header]).substring(0, 12)}...` 
-                        : row[header]}
-                    </td>
+                      {isMobile && header.length > 8 ? `${header.substring(0, 6)}...` : header}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data.map((row, rowIndex) => (
+                  <tr key={rowIndex} className="hover:bg-gray-50">
+                    {headers.map((header, cellIndex) => (
+                      <td 
+                        key={`${rowIndex}-${cellIndex}`} 
+                        className={getColumnClass(header)}
+                        title={String(row[header])}
+                      >
+                        {formatCellContent(header, row[header])}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div className="bg-gray-50 px-3 md:px-4 py-1.5 text-xs text-gray-500">
+        <div className="bg-gray-50 px-3 py-1.5 text-xs text-gray-500 whitespace-nowrap">
           {data.length} baris ditampilkan
         </div>
       </div>
@@ -174,9 +201,9 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
 
   return (
     <div className="h-screen w-full flex flex-col bg-[#FFDE3D] relative overflow-hidden">
-      <div className={`flex-1 flex flex-col items-center justify-center p-4 transition-all duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="w-full max-w-md mx-auto">
-          <div className="bg-white rounded-2xl p-5 shadow-lg flex flex-col items-center text-center space-y-4">
+      <div className={`flex-1 flex flex-col items-center p-4 transition-all duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'} overflow-y-auto`}>
+        <div className="w-full max-w-md mx-auto my-auto">
+          <div className="bg-white rounded-2xl p-5 shadow-lg flex flex-col items-center text-center space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="text-5xl mb-3">
               {currentStepData.character}
             </div>
@@ -265,13 +292,13 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
               <FaArrowLeft className="w-5 h-5" />
             </button>
             <button 
-              onClick={currentStepData.showInput ? handleCheckAnswer : handleNext}
-              disabled={(currentStepData.showInput && !userInput.trim()) || (currentStepData.showInput && isCorrect)}
-              className={`flex-1 h-14 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2 text-base ${
-                ((currentStepData.showInput && !isCorrect) || !currentStepData.showInput)
-                  ? 'bg-green-500 hover:bg-green-600 active:bg-green-700' 
-                  : 'bg-gray-400 cursor-not-allowed'
-              } shadow-sm`}
+              onClick={isCorrect ? handleNext : handleCheckAnswer}
+              disabled={currentStepData.showInput && !isCorrect && !userInput.trim()}
+              className={`flex-1 h-14 text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-base ${
+                (currentStepData.showInput && !isCorrect) || !currentStepData.showInput || isCorrect
+                  ? 'bg-green-500 hover:bg-green-600 active:bg-green-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5' 
+                  : 'bg-gray-400 cursor-not-allowed opacity-75'
+              }`}
             >
               {currentStep === steps.length - 1 ? 'Mulai Kuis' : 'Lanjut'}
               {!currentStepData.showInput && <FaArrowRight className="w-4 h-4" />}

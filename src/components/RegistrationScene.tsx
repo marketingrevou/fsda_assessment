@@ -75,15 +75,15 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
       <div 
         className="absolute inset-0 bg-[#FFDE3D] -z-10"
         style={{
-          clipPath: 'polygon(0 50%, 100% 50%, 100% 100%, 0 100%)',
+          clipPath: 'polygon(0 60%, 100% 60%, 100% 100%, 0 100%)',
           height: '100%',
           width: '100%',
         }}
       />
       
-      <div className="w-full max-w-md mx-auto text-center flex flex-col items-center justify-center px-4">
+      <div className="w-full max-w-xs mx-auto text-center flex flex-col items-center justify-center px-1">
         {/* Logo */}
-        <div className="mb-2 sm:mb-4 w-16 h-16 sm:w-20 sm:h-20 relative">
+        <div className="mb-1 w-14 h-14 relative">
           <Image 
             src="/logorevou.png" 
             alt="RevoU Logo" 
@@ -95,12 +95,12 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
         </div>
         
         {/* Headline */}
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-4 px-2">
+        <h1 className="text-lg font-bold text-gray-800 mb-2">
           Registrasi Sekarang
         </h1>
         
         {/* Registration Image */}
-        <div className="w-full max-w-[200px] sm:max-w-[240px] mx-auto my-2 sm:my-4 aspect-square relative">
+        <div className="w-36 h-36 mx-auto my-2 relative">
           <Image
             src="/registration.png"
             alt="Registration"
@@ -112,7 +112,7 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
         </div>
         
         {/* Registration Form */}
-        <form onSubmit={handleSubmit} className="w-full max-w-xs mx-auto space-y-4">
+        <form onSubmit={handleSubmit} className="w-full space-y-2 mt-1">
           <div className="text-left">
             <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
             <input 
@@ -120,11 +120,11 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
               name="fullName"
               value={formData.fullName}
               onChange={handleInputChange}
-              className={`w-full px-4 py-2 border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent`}
+              className={`w-full px-2 py-1.5 text-sm ${errors.fullName ? 'border-red-500' : 'border-gray-300'} border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent`}
               placeholder="Masukkan nama lengkap"
               required
             />
-            {errors.fullName && <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>}
+            {errors.fullName && <p className="mt-0.5 text-xs text-red-500">{errors.fullName}</p>}
           </div>
           
           <div className="text-left">
@@ -134,18 +134,18 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full px-4 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent`}
+              className={`w-full px-2 py-1.5 text-sm ${errors.email ? 'border-red-500' : 'border-gray-300'} border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent`}
               placeholder="Masukkan email"
               required
             />
-            {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+            {errors.email && <p className="mt-0.5 text-xs text-red-500">{errors.email}</p>}
           </div>
           
           {/* CTA Button */}
           <div className="w-full pt-2">
             <button 
               type="submit"
-              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 w-full"
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200 w-full text-sm"
             >
               Lanjutkan
             </button>

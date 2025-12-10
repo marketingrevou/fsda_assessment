@@ -24,20 +24,6 @@ const SQLTutorialScene = dynamic(
   { ssr: false, loading: () => <div>Loading...</div> }
 );
 
-const PreQuiz1Scene = dynamic(
-  () => import('../components/PreQuiz1Scene'),
-  { ssr: false, loading: () => <div>Loading...</div> }
-);
-
-const PreQuiz2Scene = dynamic(
-  () => import('../components/PreQuiz2Scene'),
-  { ssr: false, loading: () => <div>Loading...</div> }
-);
-
-const PreQuizCompletePopup = dynamic(
-  () => import('../components/PreQuizCompletePopup'),
-  { ssr: false }
-);
 
 const Quiz1Cover = dynamic(
   () => import('../components/Quiz1Cover'),
@@ -149,12 +135,11 @@ const ClosingScene = dynamic(
   { ssr: false, loading: () => <div>Loading...</div> }
 );
 
-type Scene = 'welcome' | 'registration' | 'preQuiz' | 'sqlTutorial' | 'preQuiz1' | 'preQuiz2' | 'quiz1Cover' | 'quiz1Q1' | 'quiz1Q2' | 'quiz1Q3' | 'quiz1Q4' | 'quiz1Q5' | 'quiz2Cover' | 'quiz2Q1' | 'quiz2Q2' | 'quiz2Q3' | 'quiz2Q4' | 'quiz2Q5' | 'quiz3Cover' | 'quiz3Q1' | 'quiz3Q2' | 'quiz3Q3' | 'quiz3Q4' | 'closing';
+type Scene = 'welcome' | 'registration' | 'preQuiz' | 'sqlTutorial' | 'quiz1Cover' | 'quiz1Q1' | 'quiz1Q2' | 'quiz1Q3' | 'quiz1Q4' | 'quiz1Q5' | 'quiz2Cover' | 'quiz2Q1' | 'quiz2Q2' | 'quiz2Q3' | 'quiz2Q4' | 'quiz2Q5' | 'quiz3Cover' | 'quiz3Q1' | 'quiz3Q2' | 'quiz3Q3' | 'quiz3Q4' | 'closing';
 
 export default function Home() {
   const [currentScene, setCurrentScene] = useState<Scene>('welcome');
   const [showQuiz1Popup, setShowQuiz1Popup] = useState(false);
-  const [showPreQuizCompletePopup, setShowPreQuizCompletePopup] = useState(false);
   const [showQuiz1CompletePopup, setShowQuiz1CompletePopup] = useState(false);
   const [showQuiz2CompletePopup, setShowQuiz2CompletePopup] = useState(false);
   const [showQuiz3CompletePopup, setShowQuiz3CompletePopup] = useState(false);
@@ -174,29 +159,13 @@ export default function Home() {
   };
 
   const handleSQLTutorialComplete = () => {
-    // Navigate to the pre-quiz after SQL tutorial
-    setCurrentScene('preQuiz1');
+    // Navigate directly to Quiz 1 Cover after SQL tutorial
+    setCurrentScene('quiz1Cover');
   };
 
   const handleQuizStart = () => {
     // Navigate to the first quiz question
-    setCurrentScene('preQuiz1');
-  };
-
-  const handlePreQuiz1Next = () => {
-    // Navigate to pre-quiz 2
-    setCurrentScene('preQuiz2');
-  };
-
-  const handlePreQuiz2Next = () => {
-    // Show the pre-quiz completion popup
-    setShowPreQuizCompletePopup(true);
-  };
-
-  const handlePreQuizCompleteContinue = () => {
-    // Navigate to Quiz 1 Cover after closing the popup
-    setShowPreQuizCompletePopup(false);
-    setCurrentScene('quiz1Cover');
+    setCurrentScene('quiz1Q1');
   };
 
   const handleQuiz1Start = () => {
@@ -457,24 +426,9 @@ export default function Home() {
           onNext={handleQuizStart} 
         />
       )}
-      {currentScene === 'preQuiz1' && (
-        <PreQuiz1Scene
-          onBack={() => setCurrentScene('sqlTutorial')}
-          onNext={handlePreQuiz1Next}
-        />
-      )}
-      {currentScene === 'preQuiz2' && (
-        <PreQuiz2Scene
-          onBack={() => setCurrentScene('preQuiz1')}
-          onNext={handlePreQuiz2Next}
-        />
-      )}
-      {showPreQuizCompletePopup && (
-        <PreQuizCompletePopup onContinue={handlePreQuizCompleteContinue} />
-      )}
       {currentScene === 'quiz1Cover' && (
         <Quiz1Cover
-          onBack={() => setCurrentScene('preQuiz2')}
+          onBack={() => setCurrentScene('sqlTutorial')}
           onNext={handleQuiz1Start}
         />
       )}
