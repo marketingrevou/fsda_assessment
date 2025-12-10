@@ -19,6 +19,11 @@ const PreQuizCover = dynamic(
   { ssr: false, loading: () => <div>Loading...</div> }
 );
 
+const SQLTutorialScene = dynamic(
+  () => import('../components/SQLTutorialScene'),
+  { ssr: false, loading: () => <div>Loading...</div> }
+);
+
 const PreQuiz1Scene = dynamic(
   () => import('../components/PreQuiz1Scene'),
   { ssr: false, loading: () => <div>Loading...</div> }
@@ -144,7 +149,7 @@ const ClosingScene = dynamic(
   { ssr: false, loading: () => <div>Loading...</div> }
 );
 
-type Scene = 'welcome' | 'registration' | 'preQuiz' | 'preQuiz1' | 'preQuiz2' | 'quiz1Cover' | 'quiz1Q1' | 'quiz1Q2' | 'quiz1Q3' | 'quiz1Q4' | 'quiz1Q5' | 'quiz2Cover' | 'quiz2Q1' | 'quiz2Q2' | 'quiz2Q3' | 'quiz2Q4' | 'quiz2Q5' | 'quiz3Cover' | 'quiz3Q1' | 'quiz3Q2' | 'quiz3Q3' | 'quiz3Q4' | 'closing';
+type Scene = 'welcome' | 'registration' | 'preQuiz' | 'sqlTutorial' | 'preQuiz1' | 'preQuiz2' | 'quiz1Cover' | 'quiz1Q1' | 'quiz1Q2' | 'quiz1Q3' | 'quiz1Q4' | 'quiz1Q5' | 'quiz2Cover' | 'quiz2Q1' | 'quiz2Q2' | 'quiz2Q3' | 'quiz2Q4' | 'quiz2Q5' | 'quiz3Cover' | 'quiz3Q1' | 'quiz3Q2' | 'quiz3Q3' | 'quiz3Q4' | 'closing';
 
 export default function Home() {
   const [currentScene, setCurrentScene] = useState<Scene>('welcome');
@@ -165,7 +170,12 @@ export default function Home() {
 
   const handleRegistrationNext = (name: string) => {
     setUserName(name);
-    setCurrentScene('preQuiz');
+    setCurrentScene('sqlTutorial');
+  };
+
+  const handleSQLTutorialComplete = () => {
+    // Navigate to the pre-quiz after SQL tutorial
+    setCurrentScene('preQuiz1');
   };
 
   const handleQuizStart = () => {
@@ -434,6 +444,13 @@ export default function Home() {
       {currentScene === 'registration' && (
         <RegistrationScene onNext={handleRegistrationNext} />
       )}
+      {currentScene === 'sqlTutorial' && (
+        <SQLTutorialScene 
+          onBack={() => setCurrentScene('registration')} 
+          onNext={handleSQLTutorialComplete}
+          userName={userName}
+        />
+      )}
       {currentScene === 'preQuiz' && (
         <PreQuizCover 
           onBack={handleBackToRegistration} 
@@ -442,7 +459,7 @@ export default function Home() {
       )}
       {currentScene === 'preQuiz1' && (
         <PreQuiz1Scene
-          onBack={() => setCurrentScene('preQuiz')}
+          onBack={() => setCurrentScene('sqlTutorial')}
           onNext={handlePreQuiz1Next}
         />
       )}
