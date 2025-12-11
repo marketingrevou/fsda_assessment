@@ -283,7 +283,7 @@ export default function Home() {
     'Quiz1Q2': 'd',        // 60% karyawan pria & wanita tinggal di luar Jabodetabek
     'Quiz1Q3': 'd',        // Kesimpulan I dan II tidak benar
     'Quiz1Q4': 'a',        // Benar
-    'Quiz1Q5': 'b',        // Baik I dan II tidak cukup untuk menjawab
+    'Quiz1Q5': 'e',        // II sendiri saja cukup sedangkan I saja tidak cukup untuk menjawab
     'Quiz2Q1': 'd',        // 55.31
     'Quiz2Q2': 'b',        // 24%
     'Quiz2Q3': 'a',        // 20%
@@ -579,14 +579,27 @@ export default function Home() {
           )}
         </>
       )}
-      {currentScene === 'closing' && (
-        <ClosingScene
-          userName={userName}
-          totalScore={totalScore}
-          totalQuestions={14} // Sum of all questions (5+5+4)
-          onContactAdmission={handleContactAdmission}
-        />
-      )}
+      {(() => {
+        if (currentScene === 'closing') {
+          // Calculate scores for each quiz section
+          const quiz1Score = calculateQuizScore(1);
+          const quiz2Score = calculateQuizScore(2);
+          const quiz3Score = calculateQuizScore(3);
+          
+          return (
+            <ClosingScene
+              userName={userName}
+              totalScore={totalScore}
+              totalQuestions={14} // Sum of all questions (5+5+4)
+              quiz1Score={quiz1Score}
+              quiz2Score={quiz2Score}
+              quiz3Score={quiz3Score}
+              onContactAdmission={handleContactAdmission}
+            />
+          );
+        }
+        return null;
+      })()}
     </main>
   );
 }

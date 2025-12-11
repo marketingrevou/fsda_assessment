@@ -16,7 +16,7 @@ const QUESTION_ID = "logical-5";
 const questions: Question[] = [
   {
     id: QUESTION_ID,
-    prompt: "Berapa banyak kandidat yang diwawancarai setiap hari oleh panel, dari tiga panel A, B dan C?",
+    prompt: "Berapa banyak kandidat yang diwawancarai setiap hari oleh masing-masing panel?",
     context: (
       <>
         <div className="italic">Setiap pertanyaan yang diberikan di bawah ini terdiri dari satu pernyataan dan/atau satu pertanyaan dan dua pernyataan bernomor I dan II yang diberikan di bawahnya. Kamu harus memutuskan apakah data yang diberikan dalam pernyataan sudah/cukup untuk menjawab pertanyaan yang diberikan.</div>

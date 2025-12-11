@@ -102,7 +102,7 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
         {/* Registration Image */}
         <div className="w-36 h-36 mx-auto my-2 relative">
           <Image
-            src="/registration.png"
+            src="/registration.gif"
             alt="Registration"
             fill
             sizes="(max-width: 640px) 240px, 280px"

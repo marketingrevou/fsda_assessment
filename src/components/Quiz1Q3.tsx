@@ -171,7 +171,7 @@ const Quiz1Q3: React.FC<Quiz1Q3Props> = ({ onBack, onComplete, onAnswer }) => {
             </button>
           </div>
           <div className="w-full mt-2 text-center text-xs text-gray-600">
-            Pertanyaan 3 dari 3
+            Pertanyaan 3 dari 5
           </div>
         </div>
       </div>

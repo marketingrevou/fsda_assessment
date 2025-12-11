@@ -49,7 +49,7 @@ const questions: Question[] = [
           </div>
           <div className="flex items-center justify-center py-1 bg-white">
             <img 
-              src="/Quiz2Q3.png" 
+              src="/Quiz2Q3_2.png" 
               alt="CMGR = (Last Month / First Month)^(1 / # of Months Difference) - 1"
               className="h-24 w-auto"
               style={{ maxWidth: '100%' }}

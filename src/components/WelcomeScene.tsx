@@ -39,7 +39,7 @@ const WelcomeScene: React.FC<WelcomeSceneProps> = ({ onNext }) => {
         {/* Animated GIF */}
         <div className="w-full max-w-[200px] sm:max-w-[240px] mx-auto my-4 aspect-square relative flex-shrink-0">
           <Image
-            src="/welcome_da.png"
+            src="/welcome_da.gif"
             alt="Digital Marketing"
             fill
             sizes="(max-width: 640px) 240px, 280px"

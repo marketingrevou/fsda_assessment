@@ -17,7 +17,7 @@ const questions: Question[] = [
     id: QUESTION_ID,
     prompt: "Pilihlah jawaban yang benar",
     context:
-      "Tarif reguler untuk sebuah pelajaran bahasa Inggris di FirstEnglish adalah 450.000 rupiah per sesi. FirstEnglish saat ini menawarkan paket spesial sebesar 2.000.000 rupiah untuk 6 sesi. Berapa persentase yang dihemat pelanggan, bagi mereka yang menerima penawaran ini untuk 12 sesi ditambah 1 satu kali sesi ?",
+      "Tarif reguler untuk sebuah pelajaran bahasa Inggris di FirstEnglish adalah 450.000 rupiah per sesi. FirstEnglish saat ini menawarkan paket spesial sebesar 2.000.000 rupiah untuk 6 sesi dan berlaku kelipatan. Berapa persentase yang dihemat pelanggan, bagi mereka yang mengambil 13 sesi?",
     options: [
       {
         id: "a",

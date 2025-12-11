@@ -28,7 +28,7 @@ const questions: Question[] = [
             priority
           />
         </div>
-        <p className="text-center">Grafik ini menunjukkan jumlah pint yang terjual vs harga per pint per hari. Apabila kita melihat pada grafik, jika sebuah pabrik ingin menjual 2100 pint dalam 2 minggu, berapa harga yang akan Kamu berikan?</p>
+        <p className="text-justify">Grafik ini menunjukkan jumlah pint yang terjual vs harga per pint per hari. Apabila kita melihat pada grafik, jika sebuah pabrik ingin menjual 2100 pint dalam 2 minggu, berapa harga yang akan Kamu berikan?</p>
       </div>
     ),
     options: [
@@ -40,17 +40,17 @@ const questions: Question[] = [
       {
         id: "b",
         label: "b.",
-        description: "2.5",
+        description: "2.0",
       },
       {
         id: "c",
         label: "c.",
-        description: "2.4",
+        description: "3.6",
       },
       {
         id: "d",
         label: "d.",
-        description: "2.2",
+        description: "3.0",
       },
       {
         id: "e",

@@ -21,13 +21,18 @@ const questions: Question[] = [
         <div className="flex justify-center">
           <div className="w-full max-w-4xl">
             <img 
-              src="/Quiz2Q5.png" 
+              src="/Quiz2Q5_1.png" 
               alt="Students by Faculty and Arts Students (Non-US) Charts" 
               className="w-full h-auto"
             />
+            <img 
+              src="/Quiz2Q5_2.png" 
+              alt="Additional chart for Arts Students (Non-US)" 
+              className="w-full h-auto mt-6"
+            />
           </div>
         </div>
-        <p className="text-gray-800 mt-4 text-center">
+        <p className="text-gray-800 mt-4 text-justify">
           Melihat pada grafik, ada total 159 mahasiswa bisnis. Berapa persentase mahasiswa di fakultas seni yang merupakan mahasiswa non-AS?
         </p>
       </div>
@@ -178,6 +183,9 @@ const Quiz2Q5: React.FC<Quiz2Q5Props> = ({ onBack, onComplete, onAnswer }) => {
             >
               Selanjutnya <FaArrowRight className="w-4 h-4" />
             </button>
+          </div>
+          <div className="w-full mt-2 text-center text-xs text-gray-600">
+            Pertanyaan 5 dari 5
           </div>
         </div>
       </div>

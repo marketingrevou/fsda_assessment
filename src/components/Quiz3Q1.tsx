@@ -156,7 +156,7 @@ const questions: Question[] = [
     id: QUESTION_ID,
     prompt: "",
     context:
-      "Di Tahun ke-3, berapa banyak yang dikeluarkan oleh Jerman untuk mengimpor komputer daripada Belanda?",
+      "Di Tahun ke-3, berapa selisih yang dikeluarkan oleh Jerman untuk mengimpor komputer dibanding Belanda?",
     options: [
       {
         id: "a",
@@ -318,7 +318,7 @@ const Quiz3Q1: React.FC<Quiz3Q1Props> = ({ onBack, onComplete, onAnswer }) => {
             </button>
           </div>
           <div className="w-full mt-2 text-center text-xs text-gray-600">
-            Pertanyaan 1 dari 5
+            Pertanyaan 1 dari 4
           </div>
         </div>
       </div>

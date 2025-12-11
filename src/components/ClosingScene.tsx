@@ -2,10 +2,18 @@
 
 import { useRouter } from 'next/navigation';
 
+interface QuizScore {
+  score: number;
+  total: number;
+}
+
 interface ClosingSceneProps {
   userName: string;
   totalScore: number;
   totalQuestions: number;
+  quiz1Score: QuizScore;
+  quiz2Score: QuizScore;
+  quiz3Score: QuizScore;
   onContactAdmission: () => void;
 }
 
@@ -13,6 +21,9 @@ const ClosingScene: React.FC<ClosingSceneProps> = ({
   userName, 
   totalScore, 
   totalQuestions,
+  quiz1Score,
+  quiz2Score,
+  quiz3Score,
   onContactAdmission 
 }) => {
   const scorePercentage = Math.round((totalScore / totalQuestions) * 100);
@@ -62,7 +73,7 @@ const ClosingScene: React.FC<ClosingSceneProps> = ({
 
           {/* Score Details */}
           <div className="bg-gray-50 rounded-xl p-6 mb-8">
-            <div className="grid grid-cols-2 gap-4 text-left">
+            <div className="grid grid-cols-2 gap-4 text-left mb-4">
               <div className="text-gray-600">Total Pertanyaan:</div>
               <div className="font-medium text-right">{totalQuestions}</div>
               
@@ -71,6 +82,51 @@ const ClosingScene: React.FC<ClosingSceneProps> = ({
               
               <div className="text-gray-600">Nilai:</div>
               <div className="font-medium text-right">{scorePercentage}%</div>
+            </div>
+
+            <div className="border-t border-gray-200 my-4"></div>
+            
+            <h3 className="text-lg font-semibold text-gray-700 mb-3">Detail Nilai Per Kategori:</h3>
+            
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between mb-1">
+                  <span className="text-sm font-medium text-gray-600">Logical Thinking</span>
+                  <span className="text-sm font-medium">{quiz1Score.score}/{quiz1Score.total}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-blue-600 h-2.5 rounded-full" 
+                    style={{ width: `${(quiz1Score.score / quiz1Score.total) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex justify-between mb-1">
+                  <span className="text-sm font-medium text-gray-600">Numerical Ability</span>
+                  <span className="text-sm font-medium">{quiz2Score.score}/{quiz2Score.total}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-green-600 h-2.5 rounded-full" 
+                    style={{ width: `${(quiz2Score.score / quiz2Score.total) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex justify-between mb-1">
+                  <span className="text-sm font-medium text-gray-600">Data Interpretation</span>
+                  <span className="text-sm font-medium">{quiz3Score.score}/{quiz3Score.total}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-purple-600 h-2.5 rounded-full" 
+                    style={{ width: `${(quiz3Score.score / quiz3Score.total) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
 

@@ -37,7 +37,7 @@ const Quiz2Cover = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
         {/* Main Image */}
         <div className="w-full max-w-[240px] sm:max-w-[280px] aspect-square relative mb-2">
           <Image
-            src="/quiz2_cover.png"
+            src="/quiz2_cover.gif"
             alt="Statistik dan Matematika Quiz"
             fill
             className="object-contain"

@@ -37,7 +37,7 @@ const Quiz1Cover = ({ onBack, onNext }: { onBack: () => void; onNext: () => void
         {/* Main Image */}
         <div className="w-full max-w-[240px] sm:max-w-[280px] aspect-square relative mb-2">
           <Image
-            src="/quiz1_cover.png"
+            src="/quiz1_cover.gif"
             alt="Data Analytics Quiz"
             fill
             className="object-contain"

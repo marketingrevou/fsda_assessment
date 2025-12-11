@@ -33,7 +33,7 @@ const Quiz2CompletePopup: React.FC<Quiz2CompletePopupProps> = ({ onContinue }) =
         <div className="text-center mb-4">
           <div className="w-24 h-24 mx-auto mb-4 relative">
             <Image 
-              src="/popup.png" 
+              src="/popup.gif" 
               alt="Clapping Hands" 
               layout="fill"
               objectFit="contain"
