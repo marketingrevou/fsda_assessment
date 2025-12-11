@@ -93,7 +93,7 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({
           font: {
             family: fontFamily,
             size: fontSize,
-            weight: '500',
+            weight: 500,
           },
         },
         min: 1.5,
@@ -117,7 +117,7 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({
           font: {
             family: fontFamily,
             size: fontSize,
-            weight: '500',
+            weight: 500,
           },
         },
         min: 70,
