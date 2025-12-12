@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import RegistrationPopup from './RegistrationPopup';
+import { savePersonalDetails } from '../utils/supabase';
 
 interface RegistrationSceneProps {
   onNext: (name: string) => void;
@@ -41,10 +42,17 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
     return valid;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      setShowPopup(true);
+      try {
+        await savePersonalDetails(formData.fullName, formData.email);
+        setShowPopup(true);
+      } catch (error) {
+        console.error('Error saving registration:', error);
+        // You might want to show an error message to the user here
+        alert('Failed to save registration. Please try again.');
+      }
     }
   };
 
