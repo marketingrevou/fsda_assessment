@@ -271,10 +271,7 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
               )}
               
               {isCorrect && (
-                <div className="p-3 bg-green-100 text-green-800 rounded-lg flex items-center justify-center">
-                  <span className="mr-2">✅</span>
-                  <span>Benar! Lanjutkan ke langkah berikutnya.</span>
-                </div>
+                <div className="h-0"></div>
               )}
             </div>
           </div>

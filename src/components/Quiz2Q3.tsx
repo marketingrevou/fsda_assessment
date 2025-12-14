@@ -51,8 +51,8 @@ const questions: Question[] = [
             <img 
               src="/Quiz2Q3_2.png" 
               alt="CMGR = (Last Month / First Month)^(1 / # of Months Difference) - 1"
-              className="h-24 w-auto"
-              style={{ maxWidth: '100%' }}
+              className="max-h-24 w-auto mx-auto"
+              style={{ objectFit: 'contain' }}
             />
           </div>
         </div>

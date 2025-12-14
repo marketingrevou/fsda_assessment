@@ -130,12 +130,27 @@ const Quiz3CompletePopup = dynamic(
   { ssr: false }
 );
 
+const EssayCover = dynamic(
+  () => import('../components/EssayCover'),
+  { ssr: false, loading: () => <div>Loading...</div> }
+);
+
+const Essay1 = dynamic(
+  () => import('../components/Essay1'),
+  { ssr: false, loading: () => <div>Loading...</div> }
+);
+
+const Essay2 = dynamic(
+  () => import('../components/Essay2'),
+  { ssr: false, loading: () => <div>Loading...</div> }
+);
+
 const ClosingScene = dynamic(
   () => import('../components/ClosingScene'),
   { ssr: false, loading: () => <div>Loading...</div> }
 );
 
-type Scene = 'welcome' | 'registration' | 'preQuiz' | 'sqlTutorial' | 'quiz1Cover' | 'quiz1Q1' | 'quiz1Q2' | 'quiz1Q3' | 'quiz1Q4' | 'quiz1Q5' | 'quiz2Cover' | 'quiz2Q1' | 'quiz2Q2' | 'quiz2Q3' | 'quiz2Q4' | 'quiz2Q5' | 'quiz3Cover' | 'quiz3Q1' | 'quiz3Q2' | 'quiz3Q3' | 'quiz3Q4' | 'closing';
+type Scene = 'welcome' | 'registration' | 'preQuiz' | 'sqlTutorial' | 'quiz1Cover' | 'quiz1Q1' | 'quiz1Q2' | 'quiz1Q3' | 'quiz1Q4' | 'quiz1Q5' | 'quiz2Cover' | 'quiz2Q1' | 'quiz2Q2' | 'quiz2Q3' | 'quiz2Q4' | 'quiz2Q5' | 'quiz3Cover' | 'quiz3Q1' | 'quiz3Q2' | 'quiz3Q3' | 'quiz3Q4' | 'essayCover' | 'essay1' | 'essay2' | 'closing';
 
 export default function Home() {
   const [currentScene, setCurrentScene] = useState<Scene>('welcome');
@@ -391,6 +406,46 @@ export default function Home() {
     setCurrentScene('closing');
   };
 
+  const handleStartEssay = () => {
+    setShowQuiz3CompletePopup(false);
+    setCurrentScene('essayCover');
+  };
+  
+  const handleEssayStart = () => {
+    setCurrentScene('essay1');
+  };
+
+  const [essay1Answer, setEssay1Answer] = useState('');
+
+  const handleEssay1Complete = (essay: string) => {
+    // Save essay answer and navigate to essay2
+    setEssay1Answer(essay);
+    setUserAnswers(prev => ({
+      ...prev,
+      essay1: {
+        answer: essay,
+        timestamp: new Date().toISOString()
+      }
+    }));
+    
+    // Navigate to essay2
+    setCurrentScene('essay2');
+  };
+
+  const handleEssay2Complete = (essay: string) => {
+    // Save essay2 answer
+    setUserAnswers(prev => ({
+      ...prev,
+      essay2: {
+        answer: essay,
+        timestamp: new Date().toISOString()
+      }
+    }));
+    
+    // Navigate to closing scene
+    setCurrentScene('closing');
+  };
+
   const handleContactAdmission = () => {
     // Handle contact admission counselor logic
     console.log('Contacting admission counselor...');
@@ -573,11 +628,33 @@ export default function Home() {
           />
           {showQuiz3CompletePopup && (
             <Quiz3CompletePopup 
-              onNext={handleViewResults} 
-              onClose={() => setShowQuiz3CompletePopup(false)} 
+              onClose={() => setShowQuiz3CompletePopup(false)}
+              onNext={handleStartEssay}
             />
           )}
         </>
+      )}
+      {currentScene === 'essayCover' && (
+        <EssayCover
+          userName={userName}
+          onBack={() => setCurrentScene('quiz3Q4')}
+          onNext={handleEssayStart}
+        />
+      )}
+      
+      {currentScene === 'essay1' && (
+        <Essay1
+          userName={userName}
+          onBack={() => setCurrentScene('essayCover')}
+          onNext={handleEssay1Complete}
+        />
+      )}
+      {currentScene === 'essay2' && (
+        <Essay2
+          userName={userName}
+          onBack={() => setCurrentScene('essay1')}
+          onNext={handleEssay2Complete}
+        />
       )}
       {(() => {
         if (currentScene === 'closing') {

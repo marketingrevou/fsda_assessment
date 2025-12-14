@@ -38,11 +38,13 @@ const Quiz1CoverPopup: React.FC<Quiz1CoverPopupProps> = ({ onClose, onStartQuiz 
           transition={{ duration: 0.2 }}
         >
           <div className="text-center">
-            <p className="text-gray-600 mb-4">
-              Kamu dapat menggunakan kalkulator untuk pertanyaan numerik, atau menggunakan Excel/Spreadsheet.
-            </p>
+            <img 
+              src="/calculator.png" 
+              alt="Calculator" 
+              className="mx-auto mb-4 w-48 h-48 object-contain"
+            />
             <p className="text-gray-600 mb-6">
-              Tes ini juga paling baik dikerjakan di desktop. Kamu dapat mempersiapkannya sekarang sebelum melanjutkan ya! Selamat Mengerjakan !
+              Kamu dapat menggunakan kalkulator untuk pertanyaan numerik, tes ini juga paling baik dikerjakan di desktop. Selamat Mengerjakan!
             </p>
             
             <div className="flex justify-center">

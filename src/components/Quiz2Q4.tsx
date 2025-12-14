@@ -18,7 +18,7 @@ const questions: Question[] = [
     id: QUESTION_ID,
     prompt: "Pilihlah jawaban yang benar",
     context: (
-      <div className="w-full">
+      <div className="w-full space-y-4">
         <div className="relative w-full h-96">
           <Image
             src="/Quiz2Q4.png"

@@ -131,12 +131,14 @@ const ClosingScene: React.FC<ClosingSceneProps> = ({
           </div>
 
           {/* Contact Button */}
-          <button
-            onClick={onContactAdmission}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-xl transition duration-200"
+          <a
+            href="https://wa.me/6281399100086"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-xl transition duration-200 text-center"
           >
             HUBUNGI ADMISSION COUNSELOR
-          </button>
+          </a>
         </div>
       </div>
     </div>

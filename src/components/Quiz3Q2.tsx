@@ -122,7 +122,7 @@ const Quiz3Q2: React.FC<Quiz3Q2Props> = ({ onBack, onComplete, onAnswer }) => {
             <div key={question.id} className="space-y-4">
               <div className="w-full overflow-x-auto my-6">
                 <img 
-                  src="/Quiz3Q2.png" 
+                  src="/Quiz3Q2_1.png" 
                   alt="COVID-19 Cases in Jakarta" 
                   className="w-auto max-w-none h-auto rounded-lg shadow-md" 
                   style={{ minWidth: '120%' }}
