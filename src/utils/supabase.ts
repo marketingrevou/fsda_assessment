@@ -45,17 +45,6 @@ export async function savePersonalDetails(name: string, email: string) {
       .select('id, email')
       .single();
       
-    if (error) throw error;
-    
-    // Save both email and user ID to localStorage
-    if (typeof window !== 'undefined' && data) {
-      localStorage.setItem('userEmail', email);
-      localStorage.setItem('userId', data.id);
-      console.log('Saved user data to localStorage:', { email, id: data.id });
-    }
-
-    console.log('Supabase response status:', status);
-    
     if (error) {
       console.error('Supabase error details:', {
         message: error.message,
@@ -65,6 +54,15 @@ export async function savePersonalDetails(name: string, email: string) {
       });
       throw error;
     }
+    
+    // Save both email and user ID to localStorage
+    if (typeof window !== 'undefined' && data) {
+      localStorage.setItem('userEmail', email);
+      localStorage.setItem('userId', data.id);
+      console.log('Saved user data to localStorage:', { email, id: data.id });
+    }
+
+    console.log('Supabase response status:', status);
     
     console.log('Successfully saved to Supabase:', data);
     return data;
