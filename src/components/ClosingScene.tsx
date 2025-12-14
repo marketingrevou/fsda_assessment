@@ -1,6 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { saveQuizScores } from '../utils/supabase';
 
 interface QuizScore {
   score: number;
@@ -26,6 +28,53 @@ const ClosingScene: React.FC<ClosingSceneProps> = ({
   quiz3Score,
   onContactAdmission 
 }) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const saveScores = async () => {
+      // Only run on client-side
+      if (typeof window === 'undefined') return;
+      
+      setIsSaving(true);
+      setSaveError(null);
+      
+      try {
+        // Get the user ID from localStorage where it was saved during registration
+        console.log('Checking localStorage for userId...');
+        const userId = localStorage.getItem('userId');
+        console.log('Retrieved userId from localStorage:', userId);
+        
+        if (!userId) {
+          console.warn('No user ID found in localStorage. Scores will not be saved.');
+          setSaveError('Warning: Your scores could not be saved because your user session was not found.');
+          return;
+        }
+
+        console.log('Attempting to save scores for user ID:', userId);
+        const { data, error } = await saveQuizScores(
+          userId,
+          quiz1Score.score,
+          quiz2Score.score,
+          quiz3Score.score
+        );
+
+        if (error) {
+          console.error('Error from saveQuizScores:', error);
+          throw error;
+        }
+        
+        console.log('Scores saved successfully:', data);
+      } catch (error) {
+        console.error('Failed to save scores:', error);
+        setSaveError('Failed to save your scores. Please try again.');
+      } finally {
+        setIsSaving(false);
+      }
+    };
+
+    saveScores();
+  }, [quiz1Score.score, quiz2Score.score, quiz3Score.score]);
   const scorePercentage = Math.round((totalScore / totalQuestions) * 100);
   let message = '';
   let messageColor = '';
@@ -130,12 +179,20 @@ const ClosingScene: React.FC<ClosingSceneProps> = ({
             </div>
           </div>
 
+          {/* Status Message */}
+          {isSaving && (
+            <div className="mb-4 text-blue-600">Saving your scores...</div>
+          )}
+          {saveError && (
+            <div className="mb-4 text-red-600">{saveError}</div>
+          )}
+
           {/* Contact Button */}
           <a
             href="https://wa.me/6281399100086"
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-xl transition duration-200 text-center"
+            className="block w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-xl transition duration-200 text-center mt-4"
           >
             HUBUNGI ADMISSION COUNSELOR
           </a>
