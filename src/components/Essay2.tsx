@@ -1,23 +1,76 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { saveAllUserData } from '../utils/supabase';
 
 interface Essay2Props {
   userName: string;
+  userId: string | null;
   onBack: () => void;
   onNext: (essay: string) => void;
 }
 
-const Essay2: React.FC<Essay2Props> = ({ userName, onBack, onNext }) => {
+const Essay2: React.FC<Essay2Props> = ({ userName, userId, onBack, onNext }) => {
   const [feedback, setFeedback] = useState<string>('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFeedback(e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onNext(feedback);
+    
+    if (!userId) {
+      setError('User ID is required to save the essay');
+      return;
+    }
+
+    if (!feedback.trim()) {
+      setError('Please enter your essay before submitting');
+      return;
+    }
+
+    // Get essay1 answer from localStorage
+    const essay1Answer = localStorage.getItem('essay1Answer') || '';
+    if (!essay1Answer) {
+      setError('Cannot find your first essay answer. Please go back and complete the first essay.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Get all the quiz scores from the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const quiz1Score = parseInt(urlParams.get('quiz1') || '0', 10);
+      const quiz2Score = parseInt(urlParams.get('quiz2') || '0', 10);
+      const quiz3Score = parseInt(urlParams.get('quiz3') || '0', 10);
+
+      // Save all data to Supabase in one go
+      const { error: saveError } = await saveAllUserData(userId, {
+        quiz1Score,
+        quiz2Score,
+        quiz3Score,
+        essay1Answer,
+        essay2Answer: feedback.trim()
+      });
+      
+      if (saveError) throw saveError;
+      
+      // Clear the stored essay1 answer
+      localStorage.removeItem('essay1Answer');
+      
+      // Proceed to next step after successful save
+    } catch (err) {
+      console.error('Failed to save data:', err);
+      setError('Failed to save your data. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const [isVisible, setIsVisible] = useState(false);
@@ -99,18 +152,31 @@ const Essay2: React.FC<Essay2Props> = ({ userName, onBack, onNext }) => {
           >
             <FaArrowLeft className="w-5 h-5 text-gray-700" />
           </button>
-          <button
-            onClick={handleSubmit}
-            disabled={!feedback.trim()}
-            className={`flex items-center justify-center gap-2 px-8 py-3 rounded-lg font-medium text-base transition-all w-full max-w-full shadow-sm ${
-              feedback.trim()
-                ? 'bg-red-600 text-white hover:bg-red-700 hover:shadow-md transform hover:-translate-y-0.5'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            <span>Submit!</span>
-            <FaArrowRight className="w-4 h-4" />
-          </button>
+          <div className="w-full">
+            {error && (
+              <div className="mb-2 text-red-600 text-sm text-center">
+                {error}
+              </div>
+            )}
+            <button
+              onClick={handleSubmit}
+              disabled={!feedback.trim() || isSubmitting}
+              className={`flex items-center justify-center gap-2 px-8 py-3 rounded-lg font-medium text-base transition-all w-full max-w-full shadow-sm ${
+                feedback.trim() && !isSubmitting
+                  ? 'bg-red-600 text-white hover:bg-red-700 hover:shadow-md transform hover:-translate-y-0.5'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              {isSubmitting ? (
+                <span>Menyimpan...</span>
+              ) : (
+                <>
+                  <span>Submit!</span>
+                  <FaArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>

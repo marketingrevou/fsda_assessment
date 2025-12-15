@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { saveEssayAnswer } from '../utils/supabase';
 
 interface Essay1Props {
   userName: string;
+  userId: string | null;
   onBack: () => void;
   onNext: (essay: string) => void;
 }
 
-const Essay1: React.FC<Essay1Props> = ({ userName, onBack, onNext }) => {
+const Essay1: React.FC<Essay1Props> = ({ userName, userId, onBack, onNext }) => {
   const [feedback, setFeedback] = useState<string>('');
   const maxLength = 150; // Kept for reference in the UI
 
@@ -22,7 +24,19 @@ const Essay1: React.FC<Essay1Props> = ({ userName, onBack, onNext }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onNext(feedback);
+    
+    if (!userId) {
+      console.error('User ID is required');
+      return;
+    }
+
+    try {
+      // Just pass the feedback to the parent component
+      // We'll save it when we have all the data in Essay2
+      onNext(feedback);
+    } catch (error) {
+      console.error('Failed to proceed:', error);
+    }
   };
 
   const [isVisible, setIsVisible] = useState(false);

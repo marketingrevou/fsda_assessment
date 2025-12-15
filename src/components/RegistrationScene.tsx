@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import RegistrationPopup from './RegistrationPopup';
 import { savePersonalDetails } from '../utils/supabase';
 
 interface RegistrationSceneProps {
-  onNext: (name: string) => void;
+  onNext: (name: string, email: string) => void;
 }
 
 const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
+  // Add useEffect to log localStorage status on component mount
+  useEffect(() => {
+    console.log('RegistrationScene mounted');
+    if (typeof window !== 'undefined') {
+      console.log('localStorage available:', !!window.localStorage);
+      console.log('Current localStorage userId:', localStorage.getItem('userId'));
+    }
+  }, []);
   const [showPopup, setShowPopup] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -43,18 +51,34 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validateForm()) {
-      try {
-        await savePersonalDetails(formData.fullName, formData.email);
-        setShowPopup(true);
-      } catch (error) {
-        console.error('Error saving registration:', error);
-        // You might want to show an error message to the user here
-        alert('Failed to save registration. Please try again.');
+  e.preventDefault();
+  if (validateForm()) {
+    try {
+      console.log('Form submitted, calling savePersonalDetails...');
+      const userData = await savePersonalDetails(formData.fullName, formData.email);
+      
+      // Save user ID to localStorage
+      if (typeof window !== 'undefined') {
+        try {
+          console.log('Saving userId to localStorage:', userData.id);
+          localStorage.setItem('userId', userData.id);
+          console.log('Successfully saved userId to localStorage');
+          
+          // Verify it was saved
+          const savedId = localStorage.getItem('userId');
+          console.log('Retrieved userId from localStorage:', savedId);
+        } catch (storageError) {
+          console.error('Error saving to localStorage:', storageError);
+        }
       }
+      
+      setShowPopup(true);
+    } catch (error) {
+      console.error('Error saving registration:', error);
+      alert('Failed to save registration. Please try again.');
     }
-  };
+  }
+};
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -73,7 +97,17 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
 
   const handleClosePopup = () => {
     setShowPopup(false);
-    onNext(formData.fullName); // Pass the user's name to the parent component
+    
+    // Get the userId from localStorage if it wasn't passed in props
+    const userId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null;
+    
+    if (!userId) {
+      console.error('No userId found in localStorage when closing popup');
+    } else {
+      console.log('Passing userId to onNext:', userId);
+    }
+    
+    onNext(formData.fullName, formData.email);
   };
 
   return (

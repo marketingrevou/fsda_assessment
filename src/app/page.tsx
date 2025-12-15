@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { savePersonalDetails, supabase } from '../utils/supabase';
 
 // Dynamically import components with SSR disabled
 const WelcomeScene = dynamic(
@@ -154,13 +155,13 @@ type Scene = 'welcome' | 'registration' | 'preQuiz' | 'sqlTutorial' | 'quiz1Cove
 
 export default function Home() {
   const [currentScene, setCurrentScene] = useState<Scene>('welcome');
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [userId, setUserId] = useState<string | null>(null);
   const [showQuiz1Popup, setShowQuiz1Popup] = useState(false);
   const [showQuiz1CompletePopup, setShowQuiz1CompletePopup] = useState(false);
   const [showQuiz2CompletePopup, setShowQuiz2CompletePopup] = useState(false);
   const [showQuiz3CompletePopup, setShowQuiz3CompletePopup] = useState(false);
-  
-  // User data and scoring state
-  const [userName, setUserName] = useState('Peserta');
   const [totalScore, setTotalScore] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, any>>({});
 
@@ -168,9 +169,46 @@ export default function Home() {
     setCurrentScene('registration');
   };
 
-  const handleRegistrationNext = (name: string) => {
-    setUserName(name);
-    setCurrentScene('sqlTutorial');
+  const handleRegistrationNext = async (name: string, email: string) => {
+    try {
+      // First try to get the user ID from localStorage
+      let userId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null;
+      console.log('handleRegistrationNext - userId from localStorage:', userId);
+      
+      // If not found in localStorage, try to get it from the database
+      if (!userId) {
+        console.log('No userId in localStorage, querying database...');
+        const { data: user, error } = await supabase
+          .from('da_personal_details')
+          .select('id')
+          .eq('email', email.trim().toLowerCase())
+          .maybeSingle();
+        
+        if (user) {
+          userId = user.id;
+          console.log('Found user in database, ID:', userId);
+          // Save to localStorage for future use
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('userId', userId || '');
+            console.log('Saved userId to localStorage in handleRegistrationNext');
+          }
+        } else {
+          console.error('User not found in database');
+          // Continue anyway to avoid blocking the user
+        }
+      }
+
+      setUserId(userId || '');
+      setUserName(name);
+      setUserEmail(email);
+      setCurrentScene('sqlTutorial');
+    } catch (error) {
+      console.error('Error during registration:', error);
+      // Continue to the next scene even if there's an error
+      setUserName(name);
+      setUserEmail(email);
+      setCurrentScene('sqlTutorial');
+    }
   };
 
   const handleSQLTutorialComplete = () => {
@@ -305,7 +343,7 @@ export default function Home() {
     'Quiz2Q4': 'a',        // 2.6
     'Quiz2Q5': 'c',        // 43
     'Quiz3Q1': 'd',        // 800
-    'Quiz3Q2': 'a',        // Kasus COVID di Jakarta pada bulan Maret rata-rata lebih tinggi dari pada bulan April
+    'Quiz3Q2': 'b',        // Kasus rata-rata harian tertinggi lebih dari 200 terjadi pada 16 April 2020
     'Quiz3Q3': 'b',        // Lebih banyak barang terjual di wilayah utara daripada selatan selama enam bulan
     'Quiz3Q4': 'a',        // Semua tanggal harus diubah ke format yang sama DD/MM/YY
   };
@@ -417,19 +455,25 @@ export default function Home() {
 
   const [essay1Answer, setEssay1Answer] = useState('');
 
-  const handleEssay1Complete = (essay: string) => {
-    // Save essay answer and navigate to essay2
-    setEssay1Answer(essay);
-    setUserAnswers(prev => ({
-      ...prev,
-      essay1: {
-        answer: essay,
-        timestamp: new Date().toISOString()
-      }
-    }));
-    
-    // Navigate to essay2
-    setCurrentScene('essay2');
+  const handleEssay1Complete = async (essay: string) => {
+    try {
+      // Store essay1 answer in localStorage for later use
+      localStorage.setItem('essay1Answer', essay);
+      
+      setUserAnswers(prev => ({
+        ...prev,
+        essay1: {
+          answer: essay,
+          timestamp: new Date().toISOString()
+        }
+      }));
+      
+      // Navigate to essay2
+      setCurrentScene('essay2');
+    } catch (error) {
+      console.error('Error saving essay answer:', error);
+      // Handle error (e.g., show error message to user)
+    }
   };
 
   const handleEssay2Complete = (essay: string) => {
@@ -645,6 +689,7 @@ export default function Home() {
       {currentScene === 'essay1' && (
         <Essay1
           userName={userName}
+          userId={userId}
           onBack={() => setCurrentScene('essayCover')}
           onNext={handleEssay1Complete}
         />
@@ -652,6 +697,7 @@ export default function Home() {
       {currentScene === 'essay2' && (
         <Essay2
           userName={userName}
+          userId={userId}
           onBack={() => setCurrentScene('essay1')}
           onNext={handleEssay2Complete}
         />

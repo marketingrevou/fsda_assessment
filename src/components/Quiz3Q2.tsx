@@ -120,13 +120,14 @@ const Quiz3Q2: React.FC<Quiz3Q2Props> = ({ onBack, onComplete, onAnswer }) => {
           <div className="bg-white rounded-2xl p-6 w-full">
           {questions.map((question) => (
             <div key={question.id} className="space-y-4">
-              <div className="w-full overflow-x-auto my-6">
-                <img 
-                  src="/Quiz3Q2_1.png" 
-                  alt="COVID-19 Cases in Jakarta" 
-                  className="w-auto max-w-none h-auto rounded-lg shadow-md" 
-                  style={{ minWidth: '120%' }}
-                />
+              <div className="w-full my-4 overflow-hidden">
+                <div className="w-full flex justify-center">
+                  <img 
+                    src="/Quiz3Q2_3.png" 
+                    alt="COVID-19 Cases in Jakarta" 
+                    className="max-w-full h-auto rounded-lg shadow-md" 
+                  />
+                </div>
               </div>
               <div className="space-y-2 px-2">
                 <p className="text-black text-base font-medium">{question.context}</p>
