@@ -796,7 +796,6 @@ export default function Home() {
           />
           {showQuiz3CompletePopup && (
             <Quiz3CompletePopup 
-              onClose={() => setShowQuiz3CompletePopup(false)}
               onNext={handleStartEssay}
             />
           )}
