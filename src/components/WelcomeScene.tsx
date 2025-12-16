@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { getImagePath } from '../utils/imagePath';
 
 interface WelcomeSceneProps {
   onNext: () => void;
@@ -22,10 +23,10 @@ const WelcomeScene: React.FC<WelcomeSceneProps> = ({ onNext }) => {
         {/* Logo */}
         <div className="w-16 h-16 sm:w-20 sm:h-20 relative">
           <Image 
-            src="/logorevou.png" 
+            src={getImagePath("logorevou.png")} 
             alt="RevoU Logo" 
-            fill
-            sizes="(max-width: 640px) 64px, 80px"
+            width={80}
+            height={80}
             className="object-contain"
             priority
           />
@@ -39,10 +40,10 @@ const WelcomeScene: React.FC<WelcomeSceneProps> = ({ onNext }) => {
         {/* Animated GIF */}
         <div className="w-full max-w-[200px] sm:max-w-[240px] mx-auto my-4 aspect-square relative flex-shrink-0">
           <Image
-            src="/welcome_da.gif"
+            src={getImagePath("welcome_da.gif")}
             alt="Digital Marketing"
-            fill
-            sizes="(max-width: 640px) 240px, 280px"
+            width={240}
+            height={240}
             className="object-contain"
             priority
           />
