@@ -3,11 +3,10 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 interface Quiz3CompletePopupProps {
-  onClose: () => void;
   onNext: () => void;
 }
 
-const Quiz3CompletePopup: React.FC<Quiz3CompletePopupProps> = ({ onClose, onNext }) => {
+const Quiz3CompletePopup: React.FC<Quiz3CompletePopupProps> = ({ onNext }) => {
   const popupStyles = {
     position: 'fixed' as const,
     top: 0,
@@ -43,16 +42,10 @@ const Quiz3CompletePopup: React.FC<Quiz3CompletePopupProps> = ({ onClose, onNext
           <p className="text-gray-800 text-lg font-medium mb-2">
             Kamu sudah menyelesaikan bagian tersulit, hebat! Tapi kita masih punya satu bagian lagi.
           </p>
-          <div className="flex gap-3 w-full">
-            <button
-              onClick={onClose}
-              className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-6 rounded-lg transition duration-200"
-            >
-              Nanti
-            </button>
+          <div className="w-full">
             <button
               onClick={onNext}
-              className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
             >
               Lanjut
             </button>

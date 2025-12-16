@@ -146,8 +146,8 @@ const Essay2 = dynamic(
   { ssr: false, loading: () => <div>Loading...</div> }
 );
 
-const ClosingScene = dynamic(
-  () => import('../components/ClosingScene'),
+const ClosingScene2 = dynamic(
+  () => import('../components/ClosingScene2'),
   { ssr: false, loading: () => <div>Loading...</div> }
 );
 
@@ -610,7 +610,7 @@ export default function Home() {
       }
     }));
     
-    // Navigate to closing scene
+    // Navigate to closing scene with the new implementation
     setCurrentScene('closing');
   }, []);
 
@@ -823,20 +823,11 @@ export default function Home() {
           userName={userName}
           userId={userId}
           onBack={() => setCurrentScene('essay1')}
-          onNext={handleEssay2Complete}
+          onNext={(essay) => handleEssay2Complete(essay)}
         />
       )}
-      {currentScene === 'closing' && finalScores && (
-        <ClosingScene
-          key="closing-scene"
-          userName={userName}
-          totalScore={totalScore}
-          totalQuestions={14} // Sum of all questions (5+5+4)
-          quiz1Score={finalScores.quiz1Score}
-          quiz2Score={finalScores.quiz2Score}
-          quiz3Score={finalScores.quiz3Score}
-          onContactAdmission={handleContactAdmission}
-        />
+      {currentScene === 'closing' && (
+        <ClosingScene2 userName={userName} />
       )}
     </main>
   );

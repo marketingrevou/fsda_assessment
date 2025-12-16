@@ -123,38 +123,25 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
         }}
       />
       
-      <div className="w-full max-w-xs mx-auto text-center flex flex-col items-center justify-center px-1">
-        {/* Logo */}
-        <div className="mb-1 w-14 h-14 relative">
-          <Image 
-            src="/logorevou.png" 
-            alt="RevoU Logo" 
-            fill
-            sizes="(max-width: 640px) 64px, 80px"
-            className="object-contain"
-            priority
-          />
-        </div>
-        
+      <div className="w-full max-w-xs mx-auto text-center flex flex-col items-center justify-start h-full py-4">
         {/* Headline */}
-        <h1 className="text-lg font-bold text-gray-800 mb-2">
+        <h1 className="text-xl font-bold text-gray-800 mb-2">
           Registrasi Sekarang
         </h1>
         
         {/* Registration Image */}
-        <div className="w-36 h-36 mx-auto my-2 relative">
+        <div className="w-48 h-48 mx-auto my-2 relative">
           <Image
             src="/registration.gif"
             alt="Registration"
             fill
-            sizes="(max-width: 640px) 240px, 280px"
             className="object-contain"
             priority
           />
         </div>
         
         {/* Registration Form */}
-        <form onSubmit={handleSubmit} className="w-full space-y-2 mt-1">
+        <form onSubmit={handleSubmit} className="w-full space-y-3 mt-2">
           <div className="text-left">
             <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
             <input 
@@ -162,7 +149,7 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
               name="fullName"
               value={formData.fullName}
               onChange={handleInputChange}
-              className={`w-full px-2 py-1.5 text-sm ${errors.fullName ? 'border-red-500' : 'border-gray-300'} border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent`}
+              className={`w-full px-3 py-2 text-sm ${errors.fullName ? 'border-red-500' : 'border-gray-300'} border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent`}
               placeholder="Masukkan nama lengkap"
               required
             />
@@ -176,7 +163,7 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full px-2 py-1.5 text-sm ${errors.email ? 'border-red-500' : 'border-gray-300'} border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent`}
+              className={`w-full px-3 py-2 text-sm ${errors.email ? 'border-red-500' : 'border-gray-300'} border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent`}
               placeholder="Masukkan email"
               required
             />
@@ -184,10 +171,10 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
           </div>
           
           {/* CTA Button */}
-          <div className="w-full pt-2">
+          <div className="w-full pt-2 mt-auto">
             <button 
               type="submit"
-              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg transition duration-200 w-full text-sm"
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 w-full text-base"
             >
               Lanjutkan
             </button>

@@ -8,56 +8,63 @@ interface WelcomeSceneProps {
 
 const WelcomeScene: React.FC<WelcomeSceneProps> = ({ onNext }) => {
   return (
-    <div className="h-screen w-full flex flex-col items-center justify-center p-4 bg-white relative overflow-hidden">
+    <div className="h-screen w-full flex flex-col items-center bg-white relative overflow-hidden">
       {/* Yellow background shape */}
       <div 
         className="absolute inset-0 bg-[#FFDE3D] -z-10"
         style={{
-          clipPath: 'polygon(0 50%, 100% 50%, 100% 100%, 0 100%)',
+          clipPath: 'polygon(0 75%, 100% 75%, 100% 100%, 0 100%)',
           height: '100%',
           width: '100%',
         }}
       />
       
-      <div className="w-full max-w-md mx-auto text-center flex flex-col items-center justify-between px-4 h-full py-8">
-        {/* Logo */}
-        <div className="w-16 h-16 sm:w-20 sm:h-20 relative">
-          <Image 
-            src={getImagePath("logorevou.png")} 
-            alt="RevoU Logo" 
-            width={80}
-            height={80}
-            className="object-contain"
-            priority
-          />
+      <div className="w-full max-w-md h-full flex flex-col items-center justify-between p-4">
+        {/* Logo and Header */}
+        <div className="w-full flex flex-col items-center pt-4">
+          <div className="w-16 h-16 relative mb-4">
+            <Image 
+              src={getImagePath("logorevou.png")} 
+              alt="RevoU Logo" 
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+          
+          <h1 className="text-xl font-bold text-gray-800 mb-2 text-center">
+            Selamat Datang, Calon Data Analyst!
+          </h1>
         </div>
         
-        {/* Headline */}
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-4 px-2">
-          Selamat Datang, Calon Data Analyst!
-        </h1>
-        
-        {/* Animated GIF */}
-        <div className="w-full max-w-[200px] sm:max-w-[240px] mx-auto my-4 aspect-square relative flex-shrink-0">
-          <Image
-            src={getImagePath("welcome_da.gif")}
-            alt="Digital Marketing"
-            width={240}
-            height={240}
-            className="object-contain"
-            priority
-          />
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col justify-center w-full">
+          {/* Animated GIF */}
+          <div className="w-60 h-60 mx-auto mb-6 relative">
+            <Image
+              src={getImagePath("welcome_da.gif")}
+              alt="Data Analyst"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+          
+          {/* Subheadline */}
+          <div className="text-center">
+            <p className="text-base text-gray-600 mb-1">
+              Cari tahu tipe Data Analyst seperti apakah kamu?
+            </p>
+            <p className="text-sm text-gray-500">
+              Waktu Pengerjaan: 10-15 menit
+            </p>
+          </div>
         </div>
-        
-        {/* Subheadline */}
-        <p className="text-sm sm:text-base text-gray-600 mb-2 px-2">
-          Cari tahu tipe Data Analyst seperti apakah kamu?
-        </p>
         
         {/* CTA Button */}
-        <div className="w-full px-4 pt-4 mt-auto">
+        <div className="w-full max-w-xs mx-auto pb-4">
           <button 
-            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 w-full max-w-xs mx-auto block"
+            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 w-full text-base"
             onClick={onNext}
           >
             Mulai Sekarang
