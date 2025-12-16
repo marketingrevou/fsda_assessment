@@ -5,6 +5,31 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+export const saveEssayAnswer = async (userId: string, essayNumber: number, answer: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('user_answers')
+      .upsert(
+        { 
+          user_id: userId, 
+          [`essay${essayNumber}_answer`]: answer,
+          updated_at: new Date().toISOString()
+        },
+        { 
+          onConflict: 'user_id'
+        }
+      )
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('Error saving essay answer:', error);
+    return { data: null, error };
+  }
+};
+
 type UserData = {
   quiz1Score?: number;
   quiz2Score?: number;
