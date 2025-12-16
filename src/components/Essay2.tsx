@@ -44,11 +44,17 @@ const Essay2: React.FC<Essay2Props> = ({ userName, userId, onBack, onNext }) => 
     setError(null);
 
     try {
-      // Get all the quiz scores from the URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const quiz1Score = parseInt(urlParams.get('quiz1') || '0', 10);
-      const quiz2Score = parseInt(urlParams.get('quiz2') || '0', 10);
-      const quiz3Score = parseInt(urlParams.get('quiz3') || '0', 10);
+      // Get quiz scores from localStorage
+      const getStoredScore = (quizNumber: number) => {
+        const score = localStorage.getItem(`quiz${quizNumber}Score`);
+        return score ? parseInt(score, 10) : 0;
+      };
+
+      const quiz1Score = getStoredScore(1);
+      const quiz2Score = getStoredScore(2);
+      const quiz3Score = getStoredScore(3);
+
+      console.log('Saving scores:', { quiz1Score, quiz2Score, quiz3Score });
 
       // Save all data to Supabase in one go
       const { error: saveError } = await saveAllUserData(userId, {
@@ -61,10 +67,14 @@ const Essay2: React.FC<Essay2Props> = ({ userName, userId, onBack, onNext }) => 
       
       if (saveError) throw saveError;
       
-      // Clear the stored essay1 answer
+      // Clear all stored data
       localStorage.removeItem('essay1Answer');
+      localStorage.removeItem('quiz1Score');
+      localStorage.removeItem('quiz2Score');
+      localStorage.removeItem('quiz3Score');
       
       // Proceed to next step after successful save
+      onNext(feedback.trim());
     } catch (err) {
       console.error('Failed to save data:', err);
       setError('Failed to save your data. Please try again.');

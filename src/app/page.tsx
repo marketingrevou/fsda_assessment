@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { savePersonalDetails, supabase } from '../utils/supabase';
+import { savePersonalDetails, supabase, calculateQuizScore } from '../utils/supabase';
 
 // Dynamically import components with SSR disabled
 const WelcomeScene = dynamic(
@@ -153,17 +153,107 @@ const ClosingScene = dynamic(
 
 type Scene = 'welcome' | 'registration' | 'preQuiz' | 'sqlTutorial' | 'quiz1Cover' | 'quiz1Q1' | 'quiz1Q2' | 'quiz1Q3' | 'quiz1Q4' | 'quiz1Q5' | 'quiz2Cover' | 'quiz2Q1' | 'quiz2Q2' | 'quiz2Q3' | 'quiz2Q4' | 'quiz2Q5' | 'quiz3Cover' | 'quiz3Q1' | 'quiz3Q2' | 'quiz3Q3' | 'quiz3Q4' | 'essayCover' | 'essay1' | 'essay2' | 'closing';
 
+type QuizAnswer = {
+  type: 'quiz';
+  questionId: string;
+  selectedOptions: string[];
+  isCorrect: boolean;
+  correctAnswer: string;
+  timestamp: string;
+};
+
+type EssayAnswer = {
+  type: 'essay';
+  questionId: string;
+  answer: string;
+  timestamp: string;
+};
+
+type UserAnswer = QuizAnswer | EssayAnswer;
+type UserAnswers = Record<string, UserAnswer>;
+
 export default function Home() {
   const [currentScene, setCurrentScene] = useState<Scene>('welcome');
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userId, setUserId] = useState<string | null>(null);
-  const [showQuiz1Popup, setShowQuiz1Popup] = useState(false);
-  const [showQuiz1CompletePopup, setShowQuiz1CompletePopup] = useState(false);
-  const [showQuiz2CompletePopup, setShowQuiz2CompletePopup] = useState(false);
-  const [showQuiz3CompletePopup, setShowQuiz3CompletePopup] = useState(false);
+  // Quiz state management
+  // State for managing quiz completion
+  const [showQuiz1CompletePopup, setShowQuiz1CompletePopup] = useState<boolean>(false);
+  const [showQuiz2CompletePopup, setShowQuiz2CompletePopup] = useState<boolean>(false);
+  const [showQuiz3CompletePopup, setShowQuiz3CompletePopup] = useState<boolean>(false);
+  const [showQuiz1Popup, setShowQuiz1Popup] = useState<boolean>(false);
+
+  const [userAnswers, setUserAnswers] = useState<UserAnswers>({});
+  const [finalScores, setFinalScores] = useState<{
+    quiz1Score: { score: number; total: number };
+    quiz2Score: { score: number; total: number };
+    quiz3Score: { score: number; total: number };
+  } | null>(null);
   const [totalScore, setTotalScore] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<Record<string, any>>({});
+  const hasSavedRef = useRef(false);
+
+  // Function to calculate final scores
+  const calculateFinalScores = useCallback((answers: UserAnswers) => {
+    try {
+      console.log('Calculating final scores with answers:', answers);
+      
+      // Filter and process only quiz answers
+      const quizAnswers = Object.values(answers).filter(
+        (answer): answer is QuizAnswer => answer.type === 'quiz'
+      );
+
+      console.log('Filtered quiz answers:', quizAnswers);
+
+      // Calculate scores for each quiz
+      const quiz1Score = quizAnswers
+        .filter(a => a.questionId.startsWith('Quiz1Q') && a.isCorrect)
+        .length;
+      
+      const quiz2Score = quizAnswers
+        .filter(a => a.questionId.startsWith('Quiz2Q') && a.isCorrect)
+        .length;
+      
+      const quiz3Score = quizAnswers
+        .filter(a => a.questionId.startsWith('Quiz3Q') && a.isCorrect)
+        .length;
+
+      console.log('Calculated scores:', { quiz1Score, quiz2Score, quiz3Score });
+
+      // Save scores to localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('quiz1Score', quiz1Score.toString());
+        localStorage.setItem('quiz2Score', quiz2Score.toString());
+        localStorage.setItem('quiz3Score', quiz3Score.toString());
+        console.log('Scores saved to localStorage:', { quiz1Score, quiz2Score, quiz3Score });
+      }
+
+      // Calculate total score
+      const total = quiz1Score + quiz2Score + quiz3Score;
+      
+      // Update the total score state
+      setTotalScore(total);
+
+      // Set the final scores
+      const newScores = {
+        quiz1Score: { score: quiz1Score, total: 5 }, // 5 questions in quiz 1
+        quiz2Score: { score: quiz2Score, total: 5 }, // 5 questions in quiz 2
+        quiz3Score: { score: quiz3Score, total: 4 }  // 4 questions in quiz 3
+      };
+      
+      setFinalScores(newScores);
+      
+      console.log('Final scores calculated and state updated:', {
+        ...newScores,
+        totalScore: total
+      });
+      
+      return newScores;
+    } catch (error) {
+      console.error('Error calculating final scores:', error);
+      return null;
+    }
+  }, []);
 
   const handleWelcomeNext = () => {
     setCurrentScene('registration');
@@ -249,11 +339,11 @@ export default function Home() {
   // Handle Quiz1Q5 completion - moved the implementation to the second declaration
 
   // Handle continuing after the completion popup is closed
-  const handleQuiz1CompleteContinue = () => {
+  const handleQuiz1CompleteContinue = useCallback((): void => {
     setShowQuiz1CompletePopup(false);
     // Navigate to Quiz 2 Cover
     setCurrentScene('quiz2Cover');
-  };
+  }, []);
 
   // Handle Quiz 2 navigation
   const handleQuiz2Start = () => {
@@ -279,10 +369,10 @@ export default function Home() {
 
   // Handle Quiz2Q5 completion - moved the implementation to the second declaration
 
-  const handleQuiz2CompleteContinue = () => {
+  const handleQuiz2CompleteContinue = useCallback((): void => {
     setShowQuiz2CompletePopup(false);
     setCurrentScene('quiz3Cover');
-  };
+  }, []);
 
   const handleQuiz3Start = () => {
     setCurrentScene('quiz3Q1');
@@ -300,14 +390,78 @@ export default function Home() {
     setCurrentScene('quiz3Q4');
   };
 
-  const calculateQuizScore = (quizNumber: number) => {
-    const quizAnswers = Object.values(userAnswers).filter(answer => 
-      answer && answer.questionId && answer.questionId.startsWith(`Quiz${quizNumber}Q`)
-    );
-    const score = quizAnswers.filter((answer: any) => answer && answer.isCorrect).length;
-    const total = quizNumber === 3 ? 4 : 5; // Quiz 3 has 4 questions, others have 5
-    return { score, total };
+  // Define correct answers for each question
+  const correctAnswers: { [key: string]: string } = {
+    'Quiz1Q1': 'a',        // Hanya satu pekerja di RevoU yang persisnya memiliki dua anak.
+    'Quiz1Q2': 'd',        // 60% karyawan pria & wanita tinggal di luar Jabodetabek
+    'Quiz1Q3': 'd',        // Kesimpulan I dan II tidak benar
+    'Quiz1Q4': 'a',        // Benar
+    'Quiz1Q5': 'e',        // II sendiri saja cukup sedangkan I saja tidak cukup untuk menjawab
+    'Quiz2Q1': 'd',        // 55.31
+    'Quiz2Q2': 'b',        // 24%
+    'Quiz2Q3': 'a',        // 20%
+    'Quiz2Q4': 'a',        // 2.6
+    'Quiz2Q5': 'c',        // 43
+    'Quiz3Q1': 'd',        // 800
+    'Quiz3Q2': 'b',        // Kasus rata-rata harian tertinggi lebih dari 200 terjadi pada 16 April 2020
+    'Quiz3Q3': 'b',        // Lebih banyak barang terjual di wilayah utara daripada selatan selama enam bulan
+    'Quiz3Q4': 'a',        // Semua tanggal harus diubah ke format yang sama DD/MM/YY
   };
+
+  const calculateQuizScore = useCallback((quizNumber: number, answers: Record<string, any>) => {
+    console.log(`\n=== Calculating Quiz ${quizNumber} Score ===`);
+    console.log('All answers:', answers);
+    
+    // Get all answers for this quiz
+    const quizAnswers = Object.entries(answers).filter(([key, value]) => {
+      // Check if the key matches the quiz pattern or if the value has a matching questionId
+      const keyMatch = key.startsWith(`Quiz${quizNumber}Q`) || 
+                      key.startsWith(`quiz${quizNumber}Q`) ||
+                      key.startsWith(`logical-`) || 
+                      key.startsWith(`data-`) ||
+                      key.startsWith(`sql-`);
+      
+      const questionIdMatch = value?.questionId && 
+                            (value.questionId.startsWith(`Quiz${quizNumber}Q`) || 
+                             value.questionId.startsWith(`quiz${quizNumber}Q`));
+      
+      const shouldInclude = (keyMatch || questionIdMatch) && value && value.isCorrect !== undefined;
+      
+      if (shouldInclude) {
+        console.log(`Including answer for ${key}:`, value);
+      }
+      
+      return shouldInclude;
+    });
+    
+    console.log(`\nQuiz ${quizNumber} filtered answers:`, quizAnswers);
+    
+    const score = quizAnswers.reduce((count, [key, answer]) => {
+      const questionId = answer.questionId || key;
+      const correctAnswer = correctAnswers[questionId] || correctAnswers[`Quiz${quizNumber}Q${key.split('Q')[1]?.split('_')[0]}`];
+      
+      // Check if the answer is correct
+      let isCorrect = answer.isCorrect;
+      
+      if (isCorrect === undefined && correctAnswer) {
+        isCorrect = answer.selectedOptions && answer.selectedOptions.some((option: string) => 
+          option && correctAnswer && 
+          option.toString().trim().toLowerCase() === correctAnswer.toString().toLowerCase()
+        );
+      }
+      
+      console.log(`\nQuestion ${questionId}:`);
+      console.log('- Selected:', answer.selectedOptions);
+      console.log('- Correct Answer:', correctAnswer || 'N/A');
+      console.log('- Is Correct:', isCorrect ? '✅' : '❌');
+      
+      return count + (isCorrect ? 1 : 0);
+    }, 0);
+    
+    const total = quizNumber === 3 ? 4 : 5; // Quiz 3 has 4 questions, others have 5
+    console.log(`\n=== Quiz ${quizNumber} Score: ${score}/${total} ===`);
+    return { score, total };
+  }, [correctAnswers]);
 
   // Map of component names to their corresponding question IDs in the correctAnswers object
   const questionIdMap: { [key: string]: string } = {
@@ -330,30 +484,14 @@ export default function Home() {
     'data-interpretation-4': 'Quiz3Q4',
   };
 
-  // Define correct answers for each question
-  const correctAnswers: { [key: string]: string } = {
-    'Quiz1Q1': 'a',        // Hanya satu pekerja di RevoU yang persisnya memiliki dua anak.
-    'Quiz1Q2': 'd',        // 60% karyawan pria & wanita tinggal di luar Jabodetabek
-    'Quiz1Q3': 'd',        // Kesimpulan I dan II tidak benar
-    'Quiz1Q4': 'a',        // Benar
-    'Quiz1Q5': 'e',        // II sendiri saja cukup sedangkan I saja tidak cukup untuk menjawab
-    'Quiz2Q1': 'd',        // 55.31
-    'Quiz2Q2': 'b',        // 24%
-    'Quiz2Q3': 'a',        // 20%
-    'Quiz2Q4': 'a',        // 2.6
-    'Quiz2Q5': 'c',        // 43
-    'Quiz3Q1': 'd',        // 800
-    'Quiz3Q2': 'b',        // Kasus rata-rata harian tertinggi lebih dari 200 terjadi pada 16 April 2020
-    'Quiz3Q3': 'b',        // Lebih banyak barang terjual di wilayah utara daripada selatan selama enam bulan
-    'Quiz3Q4': 'a',        // Semua tanggal harus diubah ke format yang sama DD/MM/YY
-  };
 
   const handleAnswer = (componentName: string, selectedOptions: string | string[]) => {
     // Ensure selectedOptions is always an array
     const optionsArray = Array.isArray(selectedOptions) ? selectedOptions : [selectedOptions];
     
     // Map the component name to the correct question ID
-    const questionId = questionIdMap[componentName] || componentName.split('-')[0];
+    const questionId = questionIdMap[componentName] || componentName;
+    const correctAnswer = correctAnswers[questionId];
 
     // For debugging
     console.group('Answer Submitted');
@@ -361,14 +499,14 @@ export default function Home() {
     console.log('Mapped Question ID:', questionId);
     console.log('Selected Options (raw):', selectedOptions);
     console.log('Selected Options (processed):', optionsArray);
-    console.log('Correct Answer:', correctAnswers[questionId] || 'N/A');
+    console.log('Correct Answer:', correctAnswer || 'N/A');
 
     // Check if we have a specific correct answer for this question
     let isCorrect = false;
-    if (correctAnswers[questionId]) {
+    if (correctAnswer) {
       // For single-select questions, check if any selected option matches the correct answer
       isCorrect = optionsArray.some(option => 
-        option && option.toString().trim().toLowerCase() === correctAnswers[questionId].toLowerCase()
+        option && option.toString().trim().toLowerCase() === correctAnswer.toLowerCase()
       );
       console.log(`Is answer correct?`, isCorrect);
     } else {
@@ -380,89 +518,73 @@ export default function Home() {
     // Log all current answers for debugging
     console.log('Current userAnswers:', userAnswers);
     
-    // Update the user's answers and recalculate the total score
-    setUserAnswers(prev => {
-      const updatedAnswers = {
+    // Create the answer object with proper type
+    const answer: QuizAnswer = {
+      type: 'quiz',
+      questionId,
+      selectedOptions: optionsArray,
+      isCorrect,
+      correctAnswer: correctAnswer || 'N/A',
+      timestamp: new Date().toISOString()
+    };
+    
+    setUserAnswers((prev: UserAnswers) => {
+      const updated = {
         ...prev,
-        [questionId]: { 
-          questionId, 
-          selectedOptions: optionsArray, // Store the normalized array
-          isCorrect,
-          correctAnswer: correctAnswers[questionId] || 'N/A'
-        }
+        [questionId]: answer
       };
       
-      // Calculate total score based on all answers
-      const totalCorrect = Object.entries(updatedAnswers)
-        .filter(([qId, answer]) => {
-          const mappedId = questionIdMap[qId] || qId;
-          const isCorrect = answer?.isCorrect;
-          console.log(`Question ${qId} (mapped to ${mappedId}):`, isCorrect ? '✅' : '❌');
-          return isCorrect;
-        })
-        .length;
-        
-      console.log(`📊 Total correct answers: ${totalCorrect} out of ${Object.keys(correctAnswers).length}`);
-      setTotalScore(totalCorrect);
+      // Calculate scores after updating answers
+      calculateFinalScores(updated);
       
-      // Log detailed score breakdown
-      console.group('Score Breakdown');
-      Object.entries(updatedAnswers).forEach(([qId, answer]) => {
-        const mappedId = questionIdMap[qId] || qId;
-        console.log(
-          `Question ${mappedId}: ${answer?.isCorrect ? '✅' : '❌'}`,
-          `(Selected: ${answer?.selectedOptions || 'none'},`,
-          `Correct: ${correctAnswers[mappedId] || 'N/A'})`
-        );
-      });
-      console.groupEnd();
+      // Log the updated answers for debugging
+      console.log('Updated userAnswers:', updated);
       
-      return updatedAnswers;
+      return updated;
     });
   };
 
-  const handleQuiz1Q5Complete = () => {
-    const { score } = calculateQuizScore(1);
-    setTotalScore(prev => prev + score);
+  const handleQuiz1Q5Complete = useCallback((): void => {
+    // Don't calculate score here, just show the completion popup
     setShowQuiz1CompletePopup(true);
-  };
+  }, []);
 
-  const handleQuiz2Q5Complete = () => {
-    const { score } = calculateQuizScore(2);
-    setTotalScore(prev => prev + score);
+  const handleQuiz2Q5Complete = useCallback((): void => {
+    // Don't calculate score here, just show the completion popup
     setShowQuiz2CompletePopup(true);
-  };
+  }, []);
 
-  const handleQuiz3Q4Complete = () => {
-    const { score } = calculateQuizScore(3);
-    setTotalScore(prev => prev + score);
+  const handleQuiz3Q4Complete = useCallback((): void => {
+    // Don't calculate score here, just show the completion popup
     setShowQuiz3CompletePopup(true);
-  };
+  }, []);
 
-  const handleViewResults = () => {
+  const handleViewResults = useCallback((): void => {
     setShowQuiz3CompletePopup(false);
     setCurrentScene('closing');
-  };
+  }, []);
 
-  const handleStartEssay = () => {
+  const handleStartEssay = useCallback((): void => {
     setShowQuiz3CompletePopup(false);
     setCurrentScene('essayCover');
-  };
+  }, []);
   
-  const handleEssayStart = () => {
+  const handleEssayStart = useCallback(() => {
     setCurrentScene('essay1');
-  };
+  }, []);
 
   const [essay1Answer, setEssay1Answer] = useState('');
 
-  const handleEssay1Complete = async (essay: string) => {
+  const handleEssay1Complete = useCallback(async (essay: string) => {
     try {
       // Store essay1 answer in localStorage for later use
       localStorage.setItem('essay1Answer', essay);
       
-      setUserAnswers(prev => ({
+      setUserAnswers((prev: UserAnswers) => ({
         ...prev,
         essay1: {
+          type: 'essay',
+          questionId: 'essay1',
           answer: essay,
           timestamp: new Date().toISOString()
         }
@@ -474,13 +596,15 @@ export default function Home() {
       console.error('Error saving essay answer:', error);
       // Handle error (e.g., show error message to user)
     }
-  };
+  }, []);
 
-  const handleEssay2Complete = (essay: string) => {
+  const handleEssay2Complete = useCallback((essay: string) => {
     // Save essay2 answer
-    setUserAnswers(prev => ({
+    setUserAnswers((prev: UserAnswers) => ({
       ...prev,
       essay2: {
+        type: 'essay',
+        questionId: 'essay2',
         answer: essay,
         timestamp: new Date().toISOString()
       }
@@ -488,24 +612,24 @@ export default function Home() {
     
     // Navigate to closing scene
     setCurrentScene('closing');
-  };
+  }, []);
 
-  const handleContactAdmission = () => {
+  const handleContactAdmission = useCallback(() => {
     // Handle contact admission counselor logic
     console.log('Contacting admission counselor...');
     // You can add your contact logic here
-  };
+  }, []);
 
-  const handleCloseQuiz1Popup = () => {
+  const handleCloseQuiz1Popup = useCallback(() => {
     setShowQuiz1Popup(false);
-  };
+  }, []);
 
-  const handleBackToRegistration = () => {
+  const handleBackToRegistration = useCallback(() => {
     setCurrentScene('registration');
-  };
+  }, []);
 
   return (
-    <main className="min-h-screen">
+<main className="min-h-screen">
       {currentScene === 'welcome' && (
         <WelcomeScene onNext={handleWelcomeNext} />
       )}
@@ -702,27 +826,18 @@ export default function Home() {
           onNext={handleEssay2Complete}
         />
       )}
-      {(() => {
-        if (currentScene === 'closing') {
-          // Calculate scores for each quiz section
-          const quiz1Score = calculateQuizScore(1);
-          const quiz2Score = calculateQuizScore(2);
-          const quiz3Score = calculateQuizScore(3);
-          
-          return (
-            <ClosingScene
-              userName={userName}
-              totalScore={totalScore}
-              totalQuestions={14} // Sum of all questions (5+5+4)
-              quiz1Score={quiz1Score}
-              quiz2Score={quiz2Score}
-              quiz3Score={quiz3Score}
-              onContactAdmission={handleContactAdmission}
-            />
-          );
-        }
-        return null;
-      })()}
+      {currentScene === 'closing' && finalScores && (
+        <ClosingScene
+          key="closing-scene"
+          userName={userName}
+          totalScore={totalScore}
+          totalQuestions={14} // Sum of all questions (5+5+4)
+          quiz1Score={finalScores.quiz1Score}
+          quiz2Score={finalScores.quiz2Score}
+          quiz3Score={finalScores.quiz3Score}
+          onContactAdmission={handleContactAdmission}
+        />
+      )}
     </main>
   );
 }

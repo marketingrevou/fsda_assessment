@@ -1,7 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { saveAllUserData } from '../utils/supabase';
 
 interface QuizScore {
@@ -23,50 +22,108 @@ const ClosingScene: React.FC<ClosingSceneProps> = ({
   userName, 
   totalScore, 
   totalQuestions,
-  quiz1Score,
-  quiz2Score,
-  quiz3Score,
+  quiz1Score: initialQuiz1Score,
+  quiz2Score: initialQuiz2Score,
+  quiz3Score: initialQuiz3Score,
   onContactAdmission 
 }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const hasSavedRef = useRef(false);
+  const [scores, setScores] = useState<{
+    quiz1Score: QuizScore;
+    quiz2Score: QuizScore;
+    quiz3Score: QuizScore;
+  } | null>(null);
 
+  // Save scores to Supabase
+  const saveScores = useCallback(async (scoresToSave: { quiz1Score: QuizScore, quiz2Score: QuizScore, quiz3Score: QuizScore }) => {
+    if (hasSavedRef.current) return;
+    
+    setIsSaving(true);
+    setSaveError(null);
+    
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        setSaveError('Warning: Your scores could not be saved because your user session was not found.');
+        return;
+      }
+
+      console.log('Saving final scores to Supabase:', { 
+        quiz1: scoresToSave.quiz1Score, 
+        quiz2: scoresToSave.quiz2Score, 
+        quiz3: scoresToSave.quiz3Score 
+      });
+      
+      const { error } = await saveAllUserData(userId, {
+        quiz1Score: scoresToSave.quiz1Score.score,
+        quiz2Score: scoresToSave.quiz2Score.score,
+        quiz3Score: scoresToSave.quiz3Score.score
+      });
+      
+      if (error) throw error;
+      
+      console.log('Scores saved successfully to Supabase');
+      hasSavedRef.current = true;
+    } catch (error) {
+      console.error('Failed to save scores:', error);
+      setSaveError('Failed to save your scores. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  }, []);
+
+  // Set initial scores and save them when component mounts
+  useEffect(() => {
+    if (initialQuiz1Score && initialQuiz2Score && initialQuiz3Score && !scores) {
+      const finalScores = {
+        quiz1Score: initialQuiz1Score,
+        quiz2Score: initialQuiz2Score,
+        quiz3Score: initialQuiz3Score
+      };
+      
+      console.log('Received initial scores in ClosingScene:', finalScores);
+      
+      // Set the scores in state
+      setScores(finalScores);
+      
+      // Save the scores immediately
+      saveScores(finalScores);
+    }
+  }, [initialQuiz1Score, initialQuiz2Score, initialQuiz3Score, scores, saveScores]);
+
+  // Save scores only once when we have the final scores
   useEffect(() => {
     const saveScores = async () => {
-      // Only run on client-side
-      if (typeof window === 'undefined') return;
+      if (!scores || hasSavedRef.current) return;
       
       setIsSaving(true);
       setSaveError(null);
       
       try {
-        // Get the user ID from localStorage where it was saved during registration
-        console.log('Checking localStorage for userId...');
         const userId = localStorage.getItem('userId');
-        console.log('Retrieved userId from localStorage:', userId);
-        
         if (!userId) {
-          console.warn('No user ID found in localStorage. Scores will not be saved.');
           setSaveError('Warning: Your scores could not be saved because your user session was not found.');
           return;
         }
 
-        console.log('Attempting to save scores for user ID:', userId);
-        // Store quiz scores in localStorage
-        localStorage.setItem('quiz1Score', quiz1Score.score.toString());
-        localStorage.setItem('quiz2Score', quiz2Score.score.toString());
-        localStorage.setItem('quiz3Score', quiz3Score.score.toString());
+        console.log('Saving final scores to Supabase:', { 
+          quiz1: scores.quiz1Score.score, 
+          quiz2: scores.quiz2Score.score, 
+          quiz3: scores.quiz3Score.score 
+        });
         
-        // Set a flag that we have scores to save
-        localStorage.setItem('hasUnsavedScores', 'true');
+        const { error } = await saveAllUserData(userId, {
+          quiz1Score: scores.quiz1Score.score,
+          quiz2Score: scores.quiz2Score.score,
+          quiz3Score: scores.quiz3Score.score
+        });
         
-        // Return a success response
-        const data = { success: true };
+        if (error) throw error;
         
-        console.log('Scores stored in localStorage successfully');
-        
-        console.log('Scores saved successfully:', data);
-        setSaveError(null); // Clear any previous error messages
+        console.log('Scores saved successfully to Supabase');
+        hasSavedRef.current = true;
       } catch (error) {
         console.error('Failed to save scores:', error);
         setSaveError('Failed to save your scores. Please try again.');
@@ -76,7 +133,15 @@ const ClosingScene: React.FC<ClosingSceneProps> = ({
     };
 
     saveScores();
-  }, [quiz1Score.score, quiz2Score.score, quiz3Score.score]);
+  }, [scores]);
+
+  // Use the scores from state or fallback to props
+  const { quiz1Score, quiz2Score, quiz3Score } = scores || {
+    quiz1Score: initialQuiz1Score,
+    quiz2Score: initialQuiz2Score,
+    quiz3Score: initialQuiz3Score
+  };
+
   const scorePercentage = Math.round((totalScore / totalQuestions) * 100);
   let message = '';
   let messageColor = '';
@@ -88,117 +153,112 @@ const ClosingScene: React.FC<ClosingSceneProps> = ({
     message = 'KERJA BAGUS!';
     messageColor = 'text-yellow-500';
   } else {
-    message = 'TERIMA KASIH TELAH BERUSAHA!';
+    message = 'COBA LAGI!';
     messageColor = 'text-red-500';
   }
 
   return (
-    <div className="min-h-screen bg-[#FFDE3D] flex flex-col items-center justify-center p-6">
-      <div className="max-w-2xl w-full bg-white rounded-3xl shadow-lg overflow-hidden">
-        {/* Header */}
-        <div className="bg-red-600 text-white text-center py-6">
-          <h1 className="text-2xl font-bold">HASIL ASSESSMENT</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex flex-col items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-3xl w-full">
+        <h1 className={`text-4xl font-bold mb-6 text-center ${messageColor}`}>{message}</h1>
+        <p className="text-lg text-gray-700 mb-8 text-center">
+          {userName}, Anda telah menyelesaikan semua kuis dengan total skor {totalScore} dari {totalQuestions} pertanyaan.
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-blue-800 text-center">Kuis 1</h3>
+            <p className="text-2xl font-bold text-center">
+              {quiz1Score.score} / {quiz1Score.total}
+            </p>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-green-800 text-center">Kuis 2</h3>
+            <p className="text-2xl font-bold text-center">
+              {quiz2Score.score} / {quiz2Score.total}
+            </p>
+          </div>
+          <div className="bg-purple-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-purple-800 text-center">Kuis 3</h3>
+            <p className="text-2xl font-bold text-center">
+              {quiz3Score.score} / {quiz3Score.total}
+            </p>
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="p-8 text-center">
-          <p className="text-gray-600 mb-2">Halo, {userName}!</p>
-          <p className="text-gray-600 mb-8">Berikut adalah hasil assessment yang telah kamu kerjakan:</p>
-
-          {/* Score Display */}
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div className="w-48 h-48 rounded-full border-8 border-gray-200 flex items-center justify-center">
-                <div className="text-center">
-                  <span className="text-5xl font-bold">{totalScore}</span>
-                  <span className="text-2xl text-gray-500">/{totalQuestions}</span>
-                </div>
-              </div>
+        <div className="bg-gray-50 p-6 rounded-xl mb-6">
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <div className="text-gray-600">Total Score:</div>
+              <div className="font-medium text-2xl">{totalScore}</div>
             </div>
-          </div>
-
-          {/* Message */}
-          <div className={`text-2xl font-bold mb-8 ${messageColor}`}>
-            {message}
-          </div>
-
-          {/* Score Details */}
-          <div className="bg-gray-50 rounded-xl p-6 mb-8">
-            <div className="grid grid-cols-2 gap-4 text-left mb-4">
-              <div className="text-gray-600">Total Pertanyaan:</div>
-              <div className="font-medium text-right">{totalQuestions}</div>
-              
-              <div className="text-gray-600">Jawaban Benar:</div>
-              <div className="font-medium text-right">{totalScore}</div>
-              
+            <div className="text-right">
               <div className="text-gray-600">Nilai:</div>
-              <div className="font-medium text-right">{scorePercentage}%</div>
-            </div>
-
-            <div className="border-t border-gray-200 my-4"></div>
-            
-            <h3 className="text-lg font-semibold text-gray-700 mb-3">Detail Nilai Per Kategori:</h3>
-            
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-600">Logical Thinking</span>
-                  <span className="text-sm font-medium">{quiz1Score.score}/{quiz1Score.total}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                  <div 
-                    className="bg-blue-600 h-2.5 rounded-full" 
-                    style={{ width: `${(quiz1Score.score / quiz1Score.total) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-600">Numerical Ability</span>
-                  <span className="text-sm font-medium">{quiz2Score.score}/{quiz2Score.total}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                  <div 
-                    className="bg-green-600 h-2.5 rounded-full" 
-                    style={{ width: `${(quiz2Score.score / quiz2Score.total) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-600">Data Interpretation</span>
-                  <span className="text-sm font-medium">{quiz3Score.score}/{quiz3Score.total}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                  <div 
-                    className="bg-purple-600 h-2.5 rounded-full" 
-                    style={{ width: `${(quiz3Score.score / quiz3Score.total) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
+              <div className="font-medium text-2xl">{scorePercentage}%</div>
             </div>
           </div>
 
-          {/* Status Message */}
-          {isSaving && (
-            <div className="mb-4 text-blue-600">Saving your scores...</div>
-          )}
-          {saveError && (
-            <div className="mb-4 text-red-600">{saveError}</div>
-          )}
-
-          {/* Contact Button */}
-          <a
-            href="https://wa.me/6281399100086"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-xl transition duration-200 text-center mt-4"
-          >
-            HUBUNGI ADMISSION COUNSELOR
-          </a>
+          <div className="border-t border-gray-200 my-4"></div>
+          
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">Detail Nilai Per Kategori:</h3>
+          
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm font-medium text-gray-600">Logical Thinking</span>
+                <span className="text-sm font-medium">{quiz1Score.score}/{quiz1Score.total}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-blue-600 h-2.5 rounded-full" 
+                  style={{ width: `${(quiz1Score.score / quiz1Score.total) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm font-medium text-gray-600">Numerical Ability</span>
+                <span className="text-sm font-medium">{quiz2Score.score}/{quiz2Score.total}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-green-600 h-2.5 rounded-full" 
+                  style={{ width: `${(quiz2Score.score / quiz2Score.total) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm font-medium text-gray-600">Data Interpretation</span>
+                <span className="text-sm font-medium">{quiz3Score.score}/{quiz3Score.total}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-purple-600 h-2.5 rounded-full" 
+                  style={{ width: `${(quiz3Score.score / quiz3Score.total) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {isSaving && (
+          <div className="mb-4 text-blue-600 text-center">Menyimpan skor Anda...</div>
+        )}
+        {saveError && (
+          <div className="mb-4 text-red-600 text-center">{saveError}</div>
+        )}
+
+        <a
+          href="https://wa.me/6281399100086"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-xl transition duration-200 text-center"
+        >
+          HUBUNGI ADMISSION COUNSELOR
+        </a>
       </div>
     </div>
   );

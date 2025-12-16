@@ -13,11 +13,55 @@ type UserData = {
   essay2Answer?: string;
 };
 
+// Define the UserAnswer type
+type UserAnswer = {
+  questionId: string;
+  selectedOptions: string[];
+  isCorrect: boolean;
+  correctAnswer: string;
+  timestamp: string;
+};
+
+type UserAnswers = Record<string, UserAnswer>;
+
+// Helper function to calculate score for a specific quiz
+export const calculateQuizScore = (userAnswers: UserAnswers, quizNumber: number): number => {
+  // Get all answers for this quiz
+  const quizAnswers = Object.entries(userAnswers)
+    .filter(([key, value]) => {
+      // Match both questionId format (Quiz1Q1) and direct key format (Quiz1Q1)
+      const isQuizQuestion = key.startsWith(`Quiz${quizNumber}Q`);
+      const hasQuestionId = value?.questionId?.startsWith(`Quiz${quizNumber}Q`);
+      return (isQuizQuestion || hasQuestionId) && value && value.isCorrect !== undefined;
+    })
+    .map(([_, value]) => value);
+  
+  console.log(`Quiz ${quizNumber} answers:`, quizAnswers);
+  
+  // Count correct answers
+  const score = quizAnswers.reduce((count: number, answer) => {
+    if (answer === null || answer === undefined) return count;
+    
+    // Check if answer has isCorrect property
+    if (typeof answer === 'object' && 'isCorrect' in answer) {
+      return count + (answer.isCorrect ? 1 : 0);
+    }
+    
+    return count;
+  }, 0);
+  
+  console.log(`Quiz ${quizNumber} score:`, score);
+  return score;
+};
+
 export async function saveAllUserData(
   personId: string,
   data: UserData
 ) {
-  console.log('Saving all user data for:', personId);
+  console.log('Saving all user data:', {
+    personId,
+    data
+  });
   
   try {
     // First check if a record exists for this user
@@ -27,39 +71,81 @@ export async function saveAllUserData(
       .eq('person', personId)
       .maybeSingle();
 
+    if (fetchError) {
+      console.error('Error fetching existing record:', fetchError);
+      throw fetchError;
+    }
+
+    // Get scores from data object or fall back to localStorage
+    const getStoredScore = (quizNumber: number, defaultScore: number = 0): number => {
+      // First try to get from data object
+      const scoreFromData = data[`quiz${quizNumber}Score` as keyof UserData];
+      if (scoreFromData !== undefined) return scoreFromData as number;
+      
+      // If not in data, try to get from localStorage
+      if (typeof window !== 'undefined') {
+        const storedScore = localStorage.getItem(`quiz${quizNumber}Score`);
+        return storedScore ? parseInt(storedScore, 10) : defaultScore;
+      }
+      
+      return defaultScore;
+    };
+
+    const quiz1Score = getStoredScore(1);
+    const quiz2Score = getStoredScore(2);
+    const quiz3Score = getStoredScore(3);
+    
+    console.log('Final scores being saved:', { quiz1Score, quiz2Score, quiz3Score });
+
+    console.log('Scores from props:', { quiz1Score, quiz2Score, quiz3Score });
+
     // Prepare the data to be saved
     const saveData = {
       person: personId,
-      quiz_one_score: data.quiz1Score ?? null,
-      quiz_two_score: data.quiz2Score ?? null,
-      quiz_three_score: data.quiz3Score ?? null,
-      essay1_answer: data.essay1Answer ?? null,
-      essay2_answer: data.essay2Answer ?? null,
+      quiz_one_score: quiz1Score,
+      quiz_two_score: quiz2Score,
+      quiz_three_score: quiz3Score,
+      essay1_answer: data.essay1Answer ?? '',
+      essay2_answer: data.essay2Answer ?? '',
       created_at: new Date().toISOString()
     };
+
+    console.log('Saving scores to database:', {
+      quiz1Score,
+      quiz2Score,
+      quiz3Score,
+      saveData
+    });
 
     let result;
     
     if (existingRecord) {
-      // Update existing record
-      console.log('Updating existing record for user:', personId);
+      console.log('Updating existing record with data:', saveData);
       const { data: updatedData, error: updateError } = await supabase
         .from('da_score')
         .update(saveData)
         .eq('person', personId)
         .select();
       
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Error updating record:', updateError);
+        throw updateError;
+      }
       result = updatedData;
     } else {
-      // Create new record if none exists
-      console.log('Creating new record for user:', personId);
+      console.log('Creating new record with data:', saveData);
       const { data: insertedData, error: insertError } = await supabase
         .from('da_score')
-        .insert([{ ...saveData, created_at: new Date().toISOString() }])
+        .insert([{ 
+          ...saveData, 
+          created_at: new Date().toISOString() 
+        }])
         .select();
       
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error('Error creating record:', insertError);
+        throw insertError;
+      }
       result = insertedData;
     }
 
