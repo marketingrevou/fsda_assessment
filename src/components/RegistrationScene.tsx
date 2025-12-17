@@ -51,26 +51,36 @@ const RegistrationScene: React.FC<RegistrationSceneProps> = ({ onNext }) => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (validateForm()) {
-    try {
-      console.log('Form submitted, calling savePersonalDetails...');
-      const userData = await savePersonalDetails(formData.fullName, formData.email);
-      
-      // Save user ID to localStorage
-      if (typeof window !== 'undefined') {
-        try {
-          console.log('Saving userId to localStorage:', userData.id);
-          localStorage.setItem('userId', userData.id);
-          console.log('Successfully saved userId to localStorage');
-          
-          // Verify it was saved
-          const savedId = localStorage.getItem('userId');
-          console.log('Retrieved userId from localStorage:', savedId);
-        } catch (storageError) {
-          console.error('Error saving to localStorage:', storageError);
+    e.preventDefault();
+    if (validateForm()) {
+      try {
+        console.log('Form submitted, calling savePersonalDetails...');
+        const { data: userData, error } = await savePersonalDetails(formData.fullName, formData.email);
+        
+        if (error) {
+          console.error('Error saving personal details:', error);
+          return;
         }
-      }
+        
+        if (!userData) {
+          console.error('No user data returned');
+          return;
+        }
+        
+        // Save user ID to localStorage
+        if (typeof window !== 'undefined') {
+          try {
+            console.log('Saving userId to localStorage:', userData.id);
+            localStorage.setItem('userId', userData.id);
+            console.log('Successfully saved userId to localStorage');
+            
+            // Verify it was saved
+            const savedId = localStorage.getItem('userId');
+            console.log('Retrieved userId from localStorage:', savedId);
+          } catch (storageError) {
+            console.error('Error saving to localStorage:', storageError);
+          }
+        }
       
       setShowPopup(true);
     } catch (error) {
