@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RevoU",
+  title: "FSDA Challenge!",
   description: "RevoU Assessment App",
   icons: {
     icon: "/logorevou.png",
