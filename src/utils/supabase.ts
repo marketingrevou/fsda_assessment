@@ -89,17 +89,8 @@ export async function saveAllUserData(
   });
   
   try {
-    // First check if a record exists for this user
-    const { data: existingRecord, error: fetchError } = await supabase
-      .from('da_score')
-      .select('id, person')
-      .eq('person', personId)
-      .maybeSingle();
-
-    if (fetchError) {
-      console.error('Error fetching existing record:', fetchError);
-      throw fetchError;
-    }
+    // Always create a new record to allow multiple submissions
+    console.log('Creating new submission record for user:', personId);
 
     // Get scores from data object or fall back to localStorage
     const getStoredScore = (quizNumber: number, defaultScore: number = 0): number => {
@@ -142,37 +133,22 @@ export async function saveAllUserData(
       saveData
     });
 
-    let result;
+    // Always create a new record with the current timestamp
+    console.log('Creating new record with data:', saveData);
+    const { data: insertedData, error: insertError } = await supabase
+      .from('da_score')
+      .insert([{ 
+        ...saveData, 
+        created_at: new Date().toISOString() 
+      }])
+      .select();
     
-    if (existingRecord) {
-      console.log('Updating existing record with data:', saveData);
-      const { data: updatedData, error: updateError } = await supabase
-        .from('da_score')
-        .update(saveData)
-        .eq('person', personId)
-        .select();
-      
-      if (updateError) {
-        console.error('Error updating record:', updateError);
-        throw updateError;
-      }
-      result = updatedData;
-    } else {
-      console.log('Creating new record with data:', saveData);
-      const { data: insertedData, error: insertError } = await supabase
-        .from('da_score')
-        .insert([{ 
-          ...saveData, 
-          created_at: new Date().toISOString() 
-        }])
-        .select();
-      
-      if (insertError) {
-        console.error('Error creating record:', insertError);
-        throw insertError;
-      }
-      result = insertedData;
+    if (insertError) {
+      console.error('Error creating record:', insertError);
+      throw insertError;
     }
+    
+    const result = insertedData;
 
     console.log('User data saved successfully:', result);
     return { data: result, error: null };
@@ -196,63 +172,24 @@ export async function savePersonalDetails(name: string, email: string) {
   try {
     // Normalize email
     const normalizedEmail = email.trim().toLowerCase();
-    console.log('Processing email:', normalizedEmail);
+    console.log('Creating new user with email:', normalizedEmail);
     
-    // Check if user with this email already exists
-    const { data: existingUser, error: fetchError } = await supabase
-      .from('da_personal_details')
-      .select('id, name')
-      .eq('email', normalizedEmail)
-      .maybeSingle();
-      
-    if (fetchError) {
-      console.error('Error checking for existing user:', fetchError);
-      throw fetchError;
-    }
-    
-    // If user exists, return existing user data
-    if (existingUser) {
-      console.log('User with this email already exists:', existingUser);
-      // Update name if it's different
-      if (existingUser.name !== name) {
-        console.log('Updating user name from', existingUser.name, 'to', name);
-        const { error: updateError } = await supabase
-          .from('da_personal_details')
-          .update({ name })
-          .eq('id', existingUser.id);
-          
-        if (updateError) {
-          console.error('Error updating user name:', updateError);
-          throw updateError;
-        }
-      }
-      return { id: existingUser.id, email: normalizedEmail };
-    }
-    
-    // If no existing user, create a new one
-    console.log('Creating new user with data:', { name, email: normalizedEmail });
+    // Always create a new user record
     const { data: newUser, error: insertError } = await supabase
       .from('da_personal_details')
-      .insert([
-        { name, email: normalizedEmail },
-      ])
-      .select('id, email')
+      .insert([{ name, email: normalizedEmail }])
+      .select()
       .single();
       
     if (insertError) {
-      console.error('Error creating new user:', {
-        message: insertError.message,
-        details: insertError.details,
-        hint: insertError.hint,
-        code: insertError.code
-      });
+      console.error('Error creating new user:', insertError);
       throw insertError;
     }
     
-    console.log('New user created successfully:', newUser);
-    return newUser;
+    console.log('New user created:', newUser);
+    return { data: newUser, error: null };
   } catch (error) {
     console.error('Unexpected error in savePersonalDetails:', error);
-    throw error;
+    return { data: null, error };
   }
 }
