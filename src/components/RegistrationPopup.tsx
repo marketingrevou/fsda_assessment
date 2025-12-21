@@ -31,7 +31,7 @@ const RegistrationPopup: React.FC<RegistrationPopupProps> = ({ onClose }) => {
       >
         <div className="text-center">
 <p className="text-gray-600 mb-6">
-            Kamu akan mengerjakan 3 set pertanyaan yang akan menentukan tipe Data Analyst kamu! Siap untuk mulai kuis pertama?
+            Kamu akan mengerjakan beberapa set pertanyaan yang akan menentukan tipe Data Analyst kamu! Siap untuk mulai kuis pertama?
           </p>
           <p className="text-gray-400 text-sm mb-6">Est. Duration: 30-45 minutes</p>
           

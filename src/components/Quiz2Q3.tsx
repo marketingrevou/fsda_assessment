@@ -49,7 +49,7 @@ const questions: Question[] = [
           </div>
           <div className="flex items-center justify-center py-1 bg-white">
             <img 
-              src="/Quiz2Q3_2.png" 
+              src="/Quiz2Q3_3.png" 
               alt="CMGR = (Last Month / First Month)^(1 / # of Months Difference) - 1"
               className="max-h-24 w-auto mx-auto"
               style={{ objectFit: 'contain' }}
@@ -141,10 +141,10 @@ const Quiz2Q3: React.FC<Quiz2Q3Props> = ({ onBack, onComplete, onAnswer }) => {
         <div className="max-w-md mx-auto">
           <div className="flex items-start gap-3">
             <div className="bg-white p-1.5 rounded-full flex-shrink-0">
-              <span className="text-lg">🧮</span>
+              <span className="text-lg">📱</span>
             </div>
             <p className="text-sm font-medium flex-1 text-left">
-              Pilihlah jawaban yang paling tepat dari pertanyaan-pertanyaan berikut.
+              Pilihlah jawaban yang paling tepat dari pertanyaan-pertanyaan berikut. Kamu boleh memakai kalkulator.
             </p>
           </div>
         </div>

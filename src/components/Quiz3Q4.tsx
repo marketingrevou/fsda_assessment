@@ -139,10 +139,10 @@ const Quiz3Q4: React.FC<Quiz3Q4Props> = ({ onBack, onComplete, onAnswer }) => {
                 <tbody>
                   {studentData.map((student, index) => (
                     <tr key={index} className={index % 2 === 0 ? 'bg-yellow-50' : 'bg-white'}>
-                      <td className="border border-gray-300 px-4 py-2">{student.name}</td>
-                      <td className="border border-gray-300 px-4 py-2">{student.class}</td>
-                      <td className="border border-gray-300 px-4 py-2">{student.dob}</td>
-                      <td className="border border-gray-300 px-4 py-2">{student.result}</td>
+                      <td className="border border-gray-300 px-4 py-2 text-gray-800">{student.name}</td>
+                      <td className="border border-gray-300 px-4 py-2 text-gray-800">{student.class}</td>
+                      <td className="border border-gray-300 px-4 py-2 text-gray-800">{student.dob}</td>
+                      <td className="border border-gray-300 px-4 py-2 text-gray-800">{student.result}</td>
                     </tr>
                   ))}
                 </tbody>

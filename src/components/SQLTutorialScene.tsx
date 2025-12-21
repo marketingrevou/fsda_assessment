@@ -161,7 +161,7 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
       <div className="mt-4 w-full border border-gray-200 rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto -mx-1">
           <div className="min-w-max w-full">
-            <table className="w-full text-xs md:text-sm">
+            <table className="w-full text-xs md:text-sm text-gray-900">
               <thead className="bg-gray-50 sticky top-0 z-10">
                 <tr>
                   {headers.map((header) => (
@@ -180,7 +180,7 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
                     {headers.map((header, cellIndex) => (
                       <td 
                         key={`${rowIndex}-${cellIndex}`} 
-                        className={getColumnClass(header)}
+                        className={`${getColumnClass(header)} text-gray-900`}
                         title={String(row[header])}
                       >
                         {formatCellContent(header, row[header])}
@@ -233,7 +233,7 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
                       value={userInput}
                       onChange={handleInputChange}
                       onKeyPress={handleKeyPress}
-                      className={`w-full p-3 text-sm md:text-base border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono ${
+                      className={`w-full p-3 text-sm md:text-base border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-gray-900 ${
                         showHint ? 'border-red-300' : 'border-gray-300'
                       }`}
                       placeholder="Ketik perintah SQL..."

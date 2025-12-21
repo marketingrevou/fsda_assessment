@@ -18,10 +18,10 @@ const questions: Question[] = [
     prompt: "Jika dua pernyataan pertama benar, maka pernyataan ketiga adalah:",
     context: (
       <>
-        <div className="italic">Setiap masalah terdiri dari tiga pernyataan. Berdasarkan dua pernyataan pertama, pernyataan ketiga mungkin benar, salah, atau tidak pasti.</div>
-        <div className="mt-4">I. Kelas Digital Marketing memiliki pendaftaran yang lebih tinggi daripada kelas Data Analytics</div>
-        <div>II. Kelas Sales memiliki pendaftaran yang lebih rendah daripada kelas Data Analytics</div>
-        <div>III. Kelas Digital Marketing memiliki pendaftaran yang lebih rendah daripada kelas Sales</div>
+        <div className="italic">Pada soal ini, kamu akan melihat tiga pernyataan. Anggap dua pernyataan pertama benar.</div>
+        <div className="mt-4">I. Kelas Digital Marketing punya murid lebih banyak dari kelas Data Analytics.</div>
+        <div>II. Kelas Sales punya murid lebih sedikit dari kelas Data Analytics.</div>
+        <div>III. Kelas Digital Marketing punya murid lebih banyak dari kelas Sales.</div>
       </>
     ),
     options: [
@@ -97,7 +97,7 @@ const Quiz1Q4: React.FC<Quiz1Q4Props> = ({ onBack, onComplete, onAnswer }) => {
               <span className="text-lg">🖐️</span>
             </div>
             <p className="text-sm font-medium flex-1 text-left">
-              Tanpa menyelesaikan apa pun, pilihlah kesimpulan yang paling logis berdasarkan pernyataan yang diberikan.
+              Tanpa perlu melakukan perhitungan, pilihlah kesimpulan yang paling logis berdasarkan pernyataan yang diberikan.
             </p>
           </div>
         </div>

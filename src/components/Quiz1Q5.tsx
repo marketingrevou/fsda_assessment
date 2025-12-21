@@ -19,36 +19,36 @@ const questions: Question[] = [
     prompt: "Berapa banyak kandidat yang diwawancarai setiap hari oleh masing-masing panel?",
     context: (
       <>
-        <div className="italic">Setiap pertanyaan yang diberikan di bawah ini terdiri dari satu pernyataan dan/atau satu pertanyaan dan dua pernyataan bernomor I dan II yang diberikan di bawahnya. Kamu harus memutuskan apakah data yang diberikan dalam pernyataan sudah/cukup untuk menjawab pertanyaan yang diberikan.</div>
+        <div className="italic">Pada soal ini, kamu akan melihat dua pernyataan dan satu pertanyaan. Tentukan apakah pernyataan yang ada sudah cukup untuk menjawab pertanyaan.</div>
         <div className="mt-4">I. Ada tiga panel wawancara di sebuah perusahaan yang rata-rata mewawancarai 35 kandidat setiap hari.</div>
-        <div>II. Dari total 90 kandidat yang diwawancarai setiap hari oleh tiga panel, panel A mewawancarai 6 kandidat lebih banyak daripada kandidat yang diwawancarai oleh panel C dan 5 kandidat lebih banyak dari  kandidat yang diwawancarai oleh panel B.</div>
+        <div>II. Dari total 90 kandidat yang diwawancarai setiap hari oleh tiga panel, panel A mewawancarai 6 kandidat lebih banyak dari panel C dan 5 kandidat lebih banyak dari panel B.</div>
       </>
     ),
     options: [
       {
         id: "a",
         label: "a.",
-        description: "I sendiri cukup sedangkan II tidak cukup untuk menjawab",
+        description: "Pernyataan I saja cukup, sedangkan pernyataan II saja tidak cukup",
       },
       {
         id: "b",
         label: "b.",
-        description: "Baik I dan II tidak cukup untuk menjawab",
+        description: "Pernyataan I dan II tidak cukup",
       },
       {
         id: "c",
         label: "c.",
-        description: "Baik I atau II saja sudah cukup untuk menjawab",
+        description: "Pernyataan I atau II saja sudah cukup",
       },
       {
         id: "d",
         label: "d.",
-        description: "Baik I dan II diperlukan untuk menjawab",
+        description: "Pernyataan I dan II diperlukan",
       },
       {
         id: "e",
         label: "e.",
-        description: "II sendiri saja cukup sedangkan I saja tidak cukup untuk menjawab",
+        description: "Pernyataan II saja cukup, sedangkan pernyataan I saja tidak cukup",
       }
     ]
   }
@@ -120,7 +120,7 @@ const Quiz1Q5: React.FC<Quiz1Q5Props> = ({ onBack, onComplete, onAnswer }) => {
               <span className="text-lg">🖐️</span>
             </div>
             <p className="text-sm font-medium flex-1 text-left">
-              Tanpa menyelesaikan apa pun, pilihlah kesimpulan yang paling logis berdasarkan pernyataan yang diberikan.
+              Tanpa perlu melakukan perhitungan, pilihlah kesimpulan yang paling logis berdasarkan pernyataan yang diberikan.
             </p>
           </div>
         </div>

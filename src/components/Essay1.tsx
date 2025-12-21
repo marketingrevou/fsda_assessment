@@ -95,10 +95,11 @@ const Essay1: React.FC<Essay1Props> = ({ userName, userId, onBack, onNext }) => 
             <div className="space-y-2">
               <div className="relative">
                 <textarea
-                  className="w-full h-48 p-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
+                  className="w-full h-48 p-4 border border-gray-300 rounded-xl text-sm text-black focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
                   placeholder="Tulis disini..."
                   value={feedback}
                   onChange={handleInputChange}
+                  style={{ color: 'black' }}
                 />
                 <div className="absolute bottom-3 right-3 text-xs text-gray-500">
                   {countWords(feedback)} words

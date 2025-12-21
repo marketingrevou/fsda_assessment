@@ -15,19 +15,18 @@ const QUESTION_ID = "logical-1";
 const questions: Question[] = [
   {
     id: QUESTION_ID,
-    prompt: "Pilihlah pernyataan yang benar (kamu boleh memilih lebih dari 1)",
-    context:
-      "Seorang manajer di RevoU memiliki dua anak. Seorang manajer di RevoU memiliki lima anak. Tidak ada orang lain di RevoU yang memiliki dua anak.",
+    prompt: "Pilihlah kesimpulan yang benar (kamu boleh memilih lebih dari satu jawaban)",
+    context: "<em>Pada soal ini, kamu akan melihat beberapa pernyataan. Anggap semua informasi dalam pernyataan benar.</em><br/><br/>Seorang manajer di RevoU memiliki dua anak.<br/>Seorang manajer di RevoU memiliki lima anak.<br/>Tidak ada orang lain di RevoU yang memiliki dua anak.",
     options: [
       {
         id: "a",
         label: "a.",
-        description: "Hanya satu pekerja di RevoU yang persisnya memiliki dua anak.",
+        description: "Hanya satu orang di RevoU yang memiliki dua anak.",
       },
       {
         id: "b",
         label: "b.",
-        description: "Semua pekerja di RevoU masing-masing memiliki dua anak.",
+        description: "Semua orang di RevoU memiliki dua anak.",
       },
       {
         id: "c",
@@ -42,7 +41,7 @@ const questions: Question[] = [
       {
         id: "e",
         label: "e.",
-        description: "Tak satu pun dari opsi-opsi ini benar.",
+        description: "Tidak ada kesimpulan di atas yang benar.",
       },
     ],
   },
@@ -110,7 +109,7 @@ const Quiz1Q1: React.FC<Quiz1Q1Props> = ({ onBack, onComplete, onAnswer }) => {
               <span className="text-lg">🖐️</span>
             </div>
             <p className="text-sm font-medium flex-1 text-left">
-              Tanpa menyelesaikan apa pun, pilihlah kesimpulan yang paling logis berdasarkan pernyataan yang diberikan.
+              Tanpa perlu melakukan perhitungan, pilihlah kesimpulan yang paling logis berdasarkan pernyataan yang diberikan.
             </p>
           </div>
         </div>
@@ -123,7 +122,10 @@ const Quiz1Q1: React.FC<Quiz1Q1Props> = ({ onBack, onComplete, onAnswer }) => {
           {questions.map((question) => (
             <div key={question.id} className="space-y-4">
               <div className="space-y-2">
-                <p className="text-black text-base font-medium">{question.context}</p>
+                <div 
+                  className="text-black text-base font-medium whitespace-pre-line" 
+                  dangerouslySetInnerHTML={{ __html: question.context }}
+                />
                 <p className="text-gray-800 font-medium">{question.prompt}</p>
               </div>
               

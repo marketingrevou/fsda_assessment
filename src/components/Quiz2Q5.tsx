@@ -117,10 +117,10 @@ const Quiz2Q5: React.FC<Quiz2Q5Props> = ({ onBack, onComplete, onAnswer }) => {
         <div className="max-w-md mx-auto">
           <div className="flex items-start gap-3">
             <div className="bg-white p-1.5 rounded-full flex-shrink-0">
-              <span className="text-lg">🧮</span>
+              <span className="text-lg">📱</span>
             </div>
             <p className="text-sm font-medium flex-1 text-left">
-              Pilihlah jawaban yang paling tepat dari pertanyaan-pertanyaan berikut.
+              Pilihlah jawaban yang paling tepat dari pertanyaan-pertanyaan berikut. Kamu boleh memakai kalkulator.
             </p>
           </div>
         </div>

@@ -73,7 +73,7 @@ const ClosingScene: React.FC<ClosingSceneProps> = ({ userName }) => {
           Mau tau hasilnya sekarang?
         </p>
         <Link 
-          href="https://wa.me/6281399100086" 
+          href="https://wa.me/6281399100086?text=Kak%2C%20aku%20udah%20isi%20quiz%20FSDA.%20Mau%20tau%20hasilnya%20dong" 
           target="_blank"
           rel="noopener noreferrer"
           className="block w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-200 text-center"

@@ -139,10 +139,16 @@ const Essay2: React.FC<Essay2Props> = ({ userName, userId, onBack, onNext }) => 
             <div className="space-y-2">
               <div className="relative">
                 <textarea
-                  className="w-full h-48 p-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none"
+                  className="w-full h-48 p-4 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 resize-none text-gray-900 bg-white"
                   placeholder="Tulis disini..."
                   value={feedback}
                   onChange={handleInputChange}
+                  style={{
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
+                    appearance: 'none',
+                    color: '#111827' // Explicitly set text color
+                  }}
                 />
                 <div className="absolute bottom-3 right-3 text-xs text-gray-500">
                   {feedback.trim() ? feedback.trim().split(/\s+/).filter(Boolean).length : 0} words

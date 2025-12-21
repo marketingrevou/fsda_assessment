@@ -18,11 +18,12 @@ const questions: Question[] = [
     prompt: "Pilih kesimpulan yang benar",
     context: (
       <>
-        <div className="italic">Pada setiap pertanyaan ini tersedia pernyataan yang diikuti dengan dua kesimpulan bernomor I dan II. Kamu harus mengasumsikan semua yang ada dalam pernyataan itu benar, kemudian pertimbangkan kedua kesimpulan itu bersama-sama dan putuskan opsi jawaban mana yang secara logis tidak memiliki keraguan terhadap informasi yang diberikan dalam pernyataan tersebut.</div>
-        <div className="mt-4">Dalam sebuah kompetisi, total poin yang dihasilkan oleh sebuah tim adalah 400. Dari 320 poin, itu dihasilkan oleh laki-laki.</div>
+        <div className="italic">Pada soal ini, kamu akan melihat pernyataan dan dua kesimpulan (I dan II). Anggap semua informasi dalam pernyataan benar. Tugasmu adalah menentukan kesimpulan mana yang pasti benar berdasarkan pernyataan tersebut.</div>
+        <div className="mt-4">Dalam sebuah kompetisi, total poin tim adalah 400 poin.</div>
+        <div>Sebanyak 320 poin diperoleh oleh laki-laki.</div>
         <div className="mt-2">Kesimpulan:</div>
-        <div>I. 80% dari tim terdiri dari laki-laki</div>
-        <div>II. Mayoritas isi tim adalah laki-laki</div>
+        <div>I. 80% anggota tim adalah laki-laki</div>
+        <div>II. Sebagian besar anggota tim adalah laki-laki</div>
       </>
     ),
     options: [
@@ -39,7 +40,7 @@ const questions: Question[] = [
       {
         id: "c",
         label: "c.",
-        description: "Kesimpulan I dan II dua-duanya adalah benar",
+        description: "Kesimpulan I dan II benar",
       },
       {
         id: "d",
@@ -103,7 +104,7 @@ const Quiz1Q3: React.FC<Quiz1Q3Props> = ({ onBack, onComplete, onAnswer }) => {
               <span className="text-lg">🖐️</span>
             </div>
             <p className="text-sm font-medium flex-1 text-left">
-              Tanpa menyelesaikan apa pun, pilihlah kesimpulan yang paling logis berdasarkan pernyataan yang diberikan.
+              Tanpa perlu melakukan perhitungan, pilihlah kesimpulan yang paling logis berdasarkan pernyataan yang diberikan.
             </p>
           </div>
         </div>

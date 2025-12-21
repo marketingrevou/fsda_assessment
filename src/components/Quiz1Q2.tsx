@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 type Question = {
@@ -15,39 +15,38 @@ const QUESTION_ID = "logical-2";
 const questions: Question[] = [
   {
     id: QUESTION_ID,
-    prompt: "Pilihlah pernyataan yang benar (kamu boleh memilih lebih dari 1)",
-    context:
-      "Di RevoU, Kamu dapat melihat bahwa 60% dari karyawan adalah laki-laki.\n80% dari karyawan memakai kacamata.\n40% karyawan berasal dari Jabodetabek.",
+    prompt: "Pilihlah kesimpulan yang benar (kamu boleh memilih lebih dari satu jawaban)",
+    context: `<i>Pada soal ini, kamu akan melihat beberapa pernyataan. Anggap semua informasi dalam pernyataan benar.</i><br/><br/>Di RevoU, 60% karyawan adalah laki-laki.<br/>80% karyawan memakai kacamata.<br/>40% karyawan berasal dari Jabodetabek.`,
     options: [
       {
         id: "a",
         label: "a.",
-        description: "36% karyawan pria berasal dari luar Jabodetabek",
+        description: "36% karyawan laki-laki berasal dari luar Jabodetabek",
       },
       {
         id: "b",
         label: "b.",
-        description: "80% karyawan pria memakai kacamata",
+        description: "80% karyawan laki-laki memakai kacamata",
       },
       {
         id: "c",
         label: "c.",
-        description: "24% karyawan wanita berasal dari Jabodetabek",
+        description: "24% karyawan perempuan berasal dari Jabodetabek",
       },
       {
         id: "d",
         label: "d.",
-        description: "60% karyawan pria & wanita tinggal di luar Jabodetabek",
+        description: "60% karyawan laki-laki dan perempuan tinggal di luar Jabodetabek",
       },
       {
         id: "e",
         label: "e.",
-        description: "20% karyawan wanita tidak memakai kacamata",
+        description: "20% karyawan perempuan tidak memakai kacamata",
       },
       {
         id: "f",
         label: "f.",
-        description: "Tak satu pun dari opsi-opsi ini benar",
+        description: "Tidak ada kesimpulan di atas yang benar",
       },
     ],
   },
@@ -115,7 +114,7 @@ const Quiz1Q2: React.FC<Quiz1Q2Props> = ({ onBack, onComplete, onAnswer }) => {
               <span className="text-lg">🖐️</span>
             </div>
             <p className="text-sm font-medium flex-1 text-left">
-              Tanpa menyelesaikan apa pun, pilihlah kesimpulan yang paling logis berdasarkan pernyataan yang diberikan.
+              Tanpa perlu melakukan perhitungan, pilihlah kesimpulan yang paling logis berdasarkan pernyataan yang diberikan.
             </p>
           </div>
         </div>
@@ -124,34 +123,39 @@ const Quiz1Q2: React.FC<Quiz1Q2Props> = ({ onBack, onComplete, onAnswer }) => {
       {/* Main Content Area */}
       <div className="flex-1 w-full overflow-y-auto pt-16 pb-24 px-4">
         <div className="max-w-md mx-auto py-4">
-          {questions.map((question) => (
-            <div key={question.id} className="space-y-4">
-              <div className="space-y-2">
-                <p className="text-black text-base font-medium">{question.context}</p>
-                <p className="text-gray-800 font-medium">{question.prompt}</p>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+            {questions.map((question) => (
+              <div key={question.id} className="space-y-4">
+                <div className="space-y-2">
+                  <div 
+                    className="text-black text-base font-medium whitespace-pre-line" 
+                    dangerouslySetInnerHTML={{ __html: question.context }} 
+                  />
+                  <p className="text-gray-800 font-medium">{question.prompt}</p>
+                </div>
+                
+                <div className="flex flex-col gap-3">
+                  {question.options.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => toggleAnswer(option.id)}
+                      disabled={isSubmitting}
+                      className={`p-4 rounded-xl text-left transition-all duration-200 w-full text-sm shadow-md ${
+                        answers[question.id]?.includes(option.id)
+                          ? 'ring-2 ring-red-500 bg-red-50'
+                          : 'bg-gray-50 hover:bg-gray-100'
+                      } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      <span className="text-gray-800">
+                        <span className="font-medium">{option.label} </span>
+                        {option.description}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
-              
-              <div className="flex flex-col gap-3">
-                {question.options.map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => toggleAnswer(option.id)}
-                    disabled={isSubmitting}
-                    className={`p-4 rounded-xl text-left transition-all duration-200 w-full text-sm shadow-md ${
-                      answers[QUESTION_ID]?.includes(option.id)
-                        ? 'ring-2 ring-red-500 bg-red-50'
-                        : 'bg-gray-50 hover:bg-gray-100'
-                    } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  >
-                    <span className="text-gray-800">
-                      <span className="font-medium">{option.label} </span>
-                      {option.description}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
       

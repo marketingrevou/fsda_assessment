@@ -98,10 +98,10 @@ const Quiz2Q2: React.FC<Quiz2Q2Props> = ({ onBack, onComplete, onAnswer }) => {
         <div className="max-w-md mx-auto">
           <div className="flex items-start gap-3">
             <div className="bg-white p-1.5 rounded-full flex-shrink-0">
-              <span className="text-lg">🧮</span>
+              <span className="text-lg">📱</span>
             </div>
             <p className="text-sm font-medium flex-1 text-left">
-              Pilihlah jawaban yang paling tepat dari pertanyaan-pertanyaan berikut.
+              Pilihlah jawaban yang paling tepat dari pertanyaan-pertanyaan berikut. Kamu boleh memakai kalkulator.
             </p>
           </div>
         </div>
@@ -110,37 +110,42 @@ const Quiz2Q2: React.FC<Quiz2Q2Props> = ({ onBack, onComplete, onAnswer }) => {
       {/* Main Content Area */}
       <div className="flex-1 w-full overflow-y-auto pt-16 pb-24 px-4">
         <div className="max-w-md mx-auto py-4">
-        <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-          {questions.map((question) => (
-            <div key={question.id} className="space-y-4">
-              <div className="space-y-2">
-                <p className="text-black text-base font-medium">{question.context}</p>
-                <p className="text-gray-800 font-medium">{question.prompt}</p>
+          <div className="bg-white rounded-2xl p-6 shadow-lg">
+            {questions.map((question) => (
+              <div key={question.id} className="space-y-6">
+                {/* Question Section */}
+                <div className="space-y-4">
+                  <div 
+                    className="text-black text-base font-medium leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: question.context }}
+                  />
+                  <p className="text-gray-800 font-medium text-sm">{question.prompt}</p>
+                </div>
+                
+                {/* Answer Options */}
+                <div className="space-y-3">
+                  {question.options.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => toggleAnswer(option.id)}
+                      disabled={isSubmitting}
+                      className={`w-full p-4 text-left rounded-xl border border-gray-200 transition-all duration-200 ${
+                        answers[QUESTION_ID]?.includes(option.id)
+                          ? 'bg-red-50 border-red-500 ring-2 ring-red-200'
+                          : 'bg-white hover:bg-gray-50'
+                      } ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    >
+                      <span className="text-gray-800 text-sm">
+                        <span className="font-medium">{option.label} </span>
+                        {option.description}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
-              
-              <div className="flex flex-col gap-3">
-                {question.options.map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => toggleAnswer(option.id)}
-                    disabled={isSubmitting}
-                    className={`p-4 rounded-xl text-left transition-all duration-200 w-full text-sm shadow-md ${
-                      answers[QUESTION_ID]?.includes(option.id)
-                        ? 'ring-2 ring-red-500 bg-red-50'
-                        : 'bg-gray-50 hover:bg-gray-100'
-                    } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  >
-                    <span className="text-gray-800">
-                      <span className="font-medium">{option.label} </span>
-                      {option.description}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
       </div>
       
       {/* Bottom Navigation */}

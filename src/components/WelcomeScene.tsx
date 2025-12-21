@@ -19,9 +19,9 @@ const WelcomeScene: React.FC<WelcomeSceneProps> = ({ onNext }) => {
         }}
       />
       
-      <div className="w-full max-w-md h-full flex flex-col items-center justify-between p-4">
+      <div className="w-full max-w-md h-full flex flex-col items-center justify-center p-4">
         {/* Logo and Header */}
-        <div className="w-full flex flex-col items-center pt-4">
+        <div className="w-full flex flex-col items-center mb-8">
           <div className="w-16 h-16 relative mb-4">
             <Image 
               src={getImagePath("logorevou.png")} 
@@ -38,7 +38,7 @@ const WelcomeScene: React.FC<WelcomeSceneProps> = ({ onNext }) => {
         </div>
         
         {/* Main Content */}
-        <div className="flex-1 flex flex-col justify-center w-full">
+        <div className="flex flex-col items-center w-full mb-8">
           {/* Animated GIF */}
           <div className="w-60 h-60 mx-auto mb-6 relative">
             <Image
@@ -62,7 +62,7 @@ const WelcomeScene: React.FC<WelcomeSceneProps> = ({ onNext }) => {
         </div>
         
         {/* CTA Button */}
-        <div className="w-full max-w-xs mx-auto pb-4">
+        <div className="w-full max-w-xs mx-auto mt-8">
           <button 
             className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 w-full text-base"
             onClick={onNext}
