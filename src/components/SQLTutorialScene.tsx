@@ -161,7 +161,7 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
       <div className="mt-4 w-full border border-gray-200 rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto -mx-1">
           <div className="min-w-max w-full">
-            <table className="w-full text-xs md:text-sm text-gray-800 dark:text-gray-200">
+            <table className="w-full text-xs md:text-sm text-gray-900 dark:text-gray-200">
               <thead className="bg-gray-50 sticky top-0 z-10">
                 <tr>
                   {headers.map((header) => (
@@ -180,7 +180,7 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
                     {headers.map((header, cellIndex) => (
                       <td 
                         key={`${rowIndex}-${cellIndex}`} 
-                        className={`${getColumnClass(header)} text-gray-800 dark:text-gray-200`}
+                        className={`${getColumnClass(header)} text-gray-900 dark:text-gray-200 font-medium`}
                         title={String(row[header])}
                       >
                         {formatCellContent(header, row[header])}
