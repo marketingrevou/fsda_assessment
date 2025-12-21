@@ -161,13 +161,13 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
       <div className="mt-4 w-full border border-gray-200 rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto -mx-1">
           <div className="min-w-max w-full">
-            <table className="w-full text-xs md:text-sm text-gray-900">
+            <table className="w-full text-xs md:text-sm text-gray-800 dark:text-gray-200">
               <thead className="bg-gray-50 sticky top-0 z-10">
                 <tr>
                   {headers.map((header) => (
                     <th 
                       key={header} 
-                      className={`${getColumnClass(header)} text-left font-medium text-gray-700 whitespace-nowrap`}
+                      className={`${getColumnClass(header)} text-left font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap`}
                     >
                       {isMobile && header.length > 8 ? `${header.substring(0, 6)}...` : header}
                     </th>
@@ -176,11 +176,11 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
               </thead>
               <tbody>
                 {data.map((row, rowIndex) => (
-                  <tr key={rowIndex} className="hover:bg-gray-50">
+                  <tr key={rowIndex} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     {headers.map((header, cellIndex) => (
                       <td 
                         key={`${rowIndex}-${cellIndex}`} 
-                        className={`${getColumnClass(header)} text-gray-900`}
+                        className={`${getColumnClass(header)} text-gray-800 dark:text-gray-200`}
                         title={String(row[header])}
                       >
                         {formatCellContent(header, row[header])}
@@ -192,7 +192,7 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
             </table>
           </div>
         </div>
-        <div className="bg-gray-50 px-3 py-1.5 text-xs text-gray-500 whitespace-nowrap">
+        <div className="bg-gray-50 dark:bg-gray-700 px-3 py-1.5 text-xs text-gray-500 dark:text-gray-300 whitespace-nowrap">
           {data.length} baris ditampilkan
         </div>
       </div>
@@ -220,8 +220,10 @@ const SQLTutorialScene: React.FC<SQLTutorialSceneProps> = ({ onBack, onNext, use
               </p>
               
               {currentStepData.example && (
-                <div className="bg-gray-50 p-3 rounded-lg font-mono text-sm overflow-x-auto">
-                  {currentStepData.example}
+                <div className="mt-4">
+                  <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-gray-800 dark:text-gray-200 font-mono overflow-x-auto">
+                    {currentStepData.example}
+                  </pre>
                 </div>
               )}
               
